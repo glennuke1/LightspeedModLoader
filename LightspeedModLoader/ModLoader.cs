@@ -488,6 +488,12 @@ namespace LightspeedModLoader
                 GameObject.Find("Quit").SetActive(false);
                 GameObject.Find("Interface/Buttons/ButtonQuit").GetComponent<PlayMakerFSM>().FsmStates[0].RemoveAction(2);
                 allModsLoaded = false;
+
+                if (firstTimeMainMenuLoad)
+                {
+                    LoadReferences();
+                }
+
                 foreach (Mod mod in A_OnMenuLoadMods)
                 {
                     try
@@ -591,6 +597,7 @@ namespace LightspeedModLoader
 
                 if (firstTimeMainMenuLoad)
                 {
+                    MSCLoader.ModLoader.LoadModsSettings();
                     firstTimeMainMenuLoad = false;
                 }
             }
@@ -935,6 +942,28 @@ namespace LightspeedModLoader
                 Directory.CreateDirectory(Path.Combine(ModLoader.ConfigFolder, mod.ID));
             }
             return Path.Combine(ModLoader.ConfigFolder, mod.ID);
+        }
+
+        internal List<string> references = new List<string>();
+
+        internal void LoadReferences()
+        {
+            if (Directory.Exists(Path.Combine(ModsFolder, "References")))
+            {
+                string[] files = Directory.GetFiles(Path.Combine(ModsFolder, "References"), "*.dll");
+
+                foreach (string dll in files)
+                {
+                    Assembly asm = Assembly.LoadFrom(dll);
+
+                    references.Add(asm.GetName().Name);
+                }
+            }
+        }
+
+        public static bool IsReferencePresent(string assemblyID)
+        {
+            return Instance.references.Contains(assemblyID);
         }
 
         public static string GetModConfigFolder(MSCLoader.Mod mod)

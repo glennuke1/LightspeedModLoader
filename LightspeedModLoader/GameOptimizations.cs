@@ -11,7 +11,7 @@ namespace LightspeedModLoader
 
         GameObject Player;
 
-        public static bool optimizing = true;
+        public static bool optimizing = false;
 
         public static bool SuckSatsumasExhaustPipeForFPS = true;
         public static bool optimizeHayosiko = true;
@@ -48,7 +48,7 @@ namespace LightspeedModLoader
                 {
                     if (transform.gameObject.activeSelf)
                     {
-                        if (transform.gameObject.name != "Chassis"/* && transform.gameObject.name != "Colliders"*/)
+                        if (transform.gameObject.name != "Chassis" && transform.gameObject.name != "Colliders")
                         {
                             kidsToDisable.Add(transform);
                         }

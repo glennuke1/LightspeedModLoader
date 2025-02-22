@@ -7,6 +7,7 @@ using System.IO;
 using System.Linq;
 using System.Reflection;
 using UnityEngine;
+using UnityEngine.UI;
 
 namespace LightspeedModLoader
 {
@@ -492,6 +493,10 @@ namespace LightspeedModLoader
                 if (firstTimeMainMenuLoad)
                 {
                     LoadReferences();
+                    AssetBundle ab = LoadAssets.LoadBundle("LightspeedModLoader.Assets.lml.unity3d");
+                    Text vLabel = Instantiate(ab.LoadAsset<GameObject>("Info")).transform.Find("Version Label").GetComponent<Text>();
+                    vLabel.text = "Lightspeed Mod Loader\n[EARLY ALPHA] 0.4";
+                    ab.Unload(true);
                 }
 
                 foreach (Mod mod in A_OnMenuLoadMods)

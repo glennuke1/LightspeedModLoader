@@ -55,8 +55,14 @@ namespace LightspeedModLoader
                     }
                 }
 
-                doorLeft = satsuma.transform.Find("Body").Find("pivot_door_left").GetChild(0);
-                doorRight = satsuma.transform.Find("Body").Find("pivot_door_right").GetChild(0);
+                if (satsuma.transform.Find("Body").Find("pivot_door_left").childCount > 0)
+                {
+                    doorLeft = satsuma.transform.Find("Body").Find("pivot_door_left").GetChild(0);
+                }
+                if (satsuma.transform.Find("Body").Find("pivot_door_right").childCount > 0)
+                {
+                    doorRight = satsuma.transform.Find("Body").Find("pivot_door_right").GetChild(0);
+                }
             }
 
             while (hayosiko == null)

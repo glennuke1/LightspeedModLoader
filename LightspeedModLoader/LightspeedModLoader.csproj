@@ -89,6 +89,9 @@
   <ItemGroup>
     <Folder Include="Builds\" />
   </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Assets\lml.unity3d" />
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
     <PostBuildEvent>xcopy /Y "$(TargetPath)" "$(ProjectDir)Builds\"

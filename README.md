@@ -12,7 +12,7 @@ LML is ***NOT*** a fork of MSCLoader, unlike Mod Loader Pro
 
 # Installation
 
-1. Download and run the installer
+1. Download and run the [installer](https://github.com/glennuke1/LightspeedModLoader/raw/refs/heads/master/LML_Installer/LML_Installer.exe)
 2. Select your MSC Executable file
 3. Click install
 

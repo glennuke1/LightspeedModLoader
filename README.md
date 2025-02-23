@@ -33,3 +33,13 @@ If you can't figure out how to do that, you can either stop using LML and/or wai
 Mod Loader Pro is abandoned and mods made for it are ***NOT*** supported by LML
 
 Users using Mod Loader Pro will not recieve any support
+
+# Is LML a virus?
+
+LML is FOSS (Free open source software)
+
+It is written in C#, which means you can freely decompile it and look at all of the code (including the official mods and the installer)
+
+Even though the mod loader source code is available on github, you can still look through the code of the installer and official mods using [DnSpy](https://github.com/dnSpy/dnSpy)
+
+I have ***NEVER*** written anything with malicious intent and posted it online to purposfully cause harm

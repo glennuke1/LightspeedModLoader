@@ -6,6 +6,10 @@ LML is built with optimizations and compatability in mind for low end hardware u
 
 LML is ***NOT*** a fork of MSCLoader, unlike Mod Loader Pro
 
+# Wiki
+
+[Lightspeed Mod Loader wiki](https://github.com/glennuke1/LightspeedModLoader/wiki)
+
 # Installation
 
 1. Download and run the installer

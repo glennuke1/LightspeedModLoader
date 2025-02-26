@@ -498,6 +498,11 @@ namespace LightspeedModLoader
                     vLabel.text = "Lightspeed Mod Loader\n[EARLY ALPHA] 0.4";
                     ab.Unload(true);
                 }
+                else
+                {
+                    Cursor.lockState = CursorLockMode.None;
+                    Cursor.visible = true;
+                }
 
                 foreach (Mod mod in A_OnMenuLoadMods)
                 {
@@ -514,14 +519,9 @@ namespace LightspeedModLoader
                                 profiler.Stop(mod.ID + " OnMenuLoad");
                         }
                     }
-                    catch (NullReferenceException e)
-                    {
-                        if (LogNullReferenceExceptions)
-                            LML_Debug.Log(string.Format("{0}<b>Details: </b>{1} in Mod <b>{2}</b> in method <b>{3}</b> in object <b>{4}</b>. StackTrace: <b>{5}</b>", Environment.NewLine, e.Message, mod.ID, e.TargetSite, e.Source, e.StackTrace));
-                    }
                     catch (Exception e)
                     {
-                        LML_Debug.Log(string.Format("{0}<b>Details: </b>{1} in Mod <b>{2}</b> in <b>{3}</b>", Environment.NewLine, e.Message, mod.ID, new StackTrace(e, true).GetFrame(0).GetMethod()));
+                        LML_Debug.Error(e);
                     }
                 }
 
@@ -611,6 +611,24 @@ namespace LightspeedModLoader
             {
                 LML_Debug.Log("\nGAME Level loaded. Running mods load methods\n");
                 StartCoroutine(LoadModsAsync());
+            }
+
+            if (loadedLevelName == "Intro")
+            {
+                foreach (Mod mod in A_OnNewGameMods)
+                {
+                    mod.A_OnNewGame();
+                }
+
+                foreach (MSCLoader.Mod mod in mscloadermodsloader.A_OnNewGameMods)
+                {
+                    mod.A_OnNewGame();
+                }
+
+                foreach (MSCLoader.Mod mod in mscloadermodsloader.loadedMods)
+                {
+                    mod.OnNewGame();
+                }
             }
         }
 

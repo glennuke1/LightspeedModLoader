@@ -57,6 +57,30 @@ namespace LightspeedModLoader
             MessageLogged?.Invoke(null, eventArgs);
         }
 
+        public static void Error(Exception ex)
+        {
+            StackTrace trace = new StackTrace(ex, true);
+
+            Log("Exception: " + ex.Message);
+
+            foreach (var frame in trace.GetFrames())
+            {
+                var method = frame.GetMethod();
+                string methodName = $"{method.DeclaringType?.FullName}.{method.Name}";
+                int lineNumber = frame.GetFileLineNumber(); // Requires PDB
+
+                // Only print if there's a valid line number
+                if (lineNumber > 0)
+                {
+                    Log($"  at {methodName} in {frame.GetFileName()}:line {lineNumber}");
+                }
+                else
+                {
+                    Log($"  at {methodName}");
+                }
+            }
+        }
+
         public static void LogError(string message)
         {
             Error(message);

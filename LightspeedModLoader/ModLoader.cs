@@ -76,7 +76,7 @@ namespace LightspeedModLoader
 
             try
             {
-                Process.Start("mysummercar_Data/Managed/LML_AutoUpdater.exe", "--mscpath=" + Directory.GetCurrentDirectory());
+                Process.Start("/mysummercar_Data/Managed/LML_AutoUpdater.exe", "--mscpath=" + Directory.GetCurrentDirectory());
             }
             catch (Exception ex)
             {
@@ -504,7 +504,7 @@ namespace LightspeedModLoader
                     LoadReferences();
                     AssetBundle ab = LoadAssets.LoadBundle("LightspeedModLoader.Assets.lml.unity3d");
                     Text vLabel = Instantiate(ab.LoadAsset<GameObject>("Info")).transform.Find("Version Label").GetComponent<Text>();
-                    vLabel.text = "Lightspeed Mod Loader\n[EARLY ALPHA] 0.4";
+                    vLabel.text = "Lightspeed Mod Loader\n" + (File.Exists("LML_VERSION") ? File.ReadAllText("LML_VERSION") : "Unknown???");
                     ab.Unload(true);
                 }
                 else

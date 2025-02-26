@@ -62,6 +62,8 @@
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
-    <PostBuildEvent>xcopy /Y "$(TargetPath)" "$(ProjectDir)Builds\"</PostBuildEvent>
+    <PostBuildEvent>xcopy /Y "$(TargetPath)" "$(ProjectDir)Builds\"
+
+xcopy /Y "$(TargetPath)" "H:\SteamLibrary\steamapps\common\My Summer Car\mysummercar_Data\Managed\"</PostBuildEvent>
   </PropertyGroup>
 </Project>

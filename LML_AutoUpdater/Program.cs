@@ -9,28 +9,57 @@ namespace LML_AutoUpdater
     {
         static void Main(string[] args)
         {
-            if (Process.GetProcessesByName("mysummercar")[0] != null)
-            {
-                Process.GetProcessesByName("mysummercar")[0].Kill();
-            }
-
             if (args[0] == "--mscpath=")
             {
                 mscpath = args[0].Split('=')[1];
             }
 
-            InstallFiles();
+            if (!IsUpdated())
+            {
+                if (Process.GetProcessesByName("mysummercar")[0] != null)
+                {
+                    Process.GetProcessesByName("mysummercar")[0].Kill();
+                }
+
+                InstallFiles();
+
+                Process.Start(mscpath + "mysummercar.exe");
+            }
         }
 
         static string mscpath;
+
+        private static bool IsUpdated()
+        {
+            if (!File.Exists(mscpath + "LML_VERSION"))
+            {
+                return false;
+            }
+
+            string onlineVersion = "";
+            using (var wc = new WebClient())
+            {
+                onlineVersion = wc.DownloadString("https://raw.githubusercontent.com/glennuke1/LightspeedModLoader/refs/heads/master/LightspeedModLoader/Builds/VERSION");
+            }
+
+            if (onlineVersion == File.ReadAllText(mscpath + "LML_VERSION"))
+            {
+                return true;
+            }
+            else
+            {
+                return false;
+            }
+        }
 
         static void InstallFiles()
         {
             using (var client = new WebClient())
             {
-                client.DownloadFile("https://github.com/glennuke1/LightspeedModLoader/raw/refs/heads/master/LightspeedModLoader/Builds/doorstop.zip", "doorstop.zip");
-                client.DownloadFile("https://github.com/glennuke1/LightspeedModLoader/raw/refs/heads/master/LightspeedModLoader/Builds/References.zip", "References.zip");
-                client.DownloadFile("https://github.com/glennuke1/LightspeedModLoader/raw/refs/heads/master/LightspeedModLoader/Builds/NeededDLLS.zip", "NeededDLLS.zip");
+                client.DownloadFile("https://github.com/glennuke1/LightspeedModLoader/raw/refs/heads/master/LightspeedModLoader/Builds/doorstop.zip", mscpath + "doorstop.zip");
+                client.DownloadFile("https://github.com/glennuke1/LightspeedModLoader/raw/refs/heads/master/LightspeedModLoader/Builds/References.zip", mscpath + "References.zip");
+                client.DownloadFile("https://github.com/glennuke1/LightspeedModLoader/raw/refs/heads/master/LightspeedModLoader/Builds/NeededDLLS.zip", mscpath + "NeededDLLS.zip");
+                client.DownloadFile("https://github.com/glennuke1/LightspeedModLoader/raw/refs/heads/master/LightspeedModLoader/Builds/VERSION", mscpath + "LML_VERSION");
             }
 
             ZipFile zip = ZipFile.Read("doorstop.zip");

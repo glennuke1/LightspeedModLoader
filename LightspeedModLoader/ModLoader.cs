@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
+using System.Net;
 using System.Reflection;
 using UnityEngine;
 using UnityEngine.UI;
@@ -73,6 +74,7 @@ namespace LightspeedModLoader
                 Directory.CreateDirectory(ConfigFolder);
             }
 
+            Process.Start("mysummercar_Data/Managed/LML_AutoUpdater.exe", "--mscpath=" + Directory.GetCurrentDirectory());
             Prepare();
         }
 

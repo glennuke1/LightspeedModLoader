@@ -74,7 +74,14 @@ namespace LightspeedModLoader
                 Directory.CreateDirectory(ConfigFolder);
             }
 
-            Process.Start("mysummercar_Data/Managed/LML_AutoUpdater.exe", "--mscpath=" + Directory.GetCurrentDirectory());
+            try
+            {
+                Process.Start("mysummercar_Data/Managed/LML_AutoUpdater.exe", "--mscpath=" + Directory.GetCurrentDirectory());
+            }
+            catch (Exception ex)
+            {
+                LML_Debug.Log(ex.Message);
+            }
             Prepare();
         }
 

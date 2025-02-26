@@ -1,5 +1,6 @@
 ﻿using Harmony;
 using System;
+using System.Diagnostics;
 using System.IO;
 using System.Reflection;
 using UnityEngine;
@@ -29,8 +30,31 @@ namespace LightspeedModLoader.PreLoader
             }
         }
 
+        private static bool IsUpdated()
+        {
+            string onlineVersion = "";
+            using (var wc = new System.Net.WebClient())
+            {
+                onlineVersion = wc.DownloadString("https://github.com/glennuke1/LightspeedModLoader/raw/refs/heads/master/LightspeedModLoader/Builds/VERSION");
+            }
+
+            if (onlineVersion == File.ReadAllText("LML_VERSION"))
+            {
+                return true;
+            }
+            else
+            {
+                return false;
+            }
+        }
+
         private static void InjectModLoader()
         {
+            if (!IsUpdated())
+            {
+                Process.Start("LML_AutoUpdater.exe", "--mscpath=" + Path.GetDirectoryName(Path.GetFullPath("mysummercar.exe")));
+            }
+
             try
             {
                 LML_Debug.Log("Patching LML Methods");

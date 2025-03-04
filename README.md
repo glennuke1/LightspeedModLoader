@@ -4,7 +4,7 @@ Lightspeed Mod Loader (or LML) is a new mod loader for My Summer Car built from 
 
 LML is built with optimizations and compatability in mind for low end hardware users
 
-LML is ***NOT*** a fork of MSCLoader, unlike Mod Loader Pro
+Note: LML is an early beta currently made for personal use (because i like using my own stuff so i can modify it to my needs), but feel free to use it if you'd like
 
 # Wiki
 
@@ -43,3 +43,5 @@ It is written in C#, which means you can freely decompile it and look at all of 
 Even though the mod loader source code is available on github, you can still look through the code of the installer and official mods using [DnSpy](https://github.com/dnSpy/dnSpy)
 
 I have ***NEVER*** written anything with malicious intent and posted it online to purposfully cause harm
+
+[LML Installer Repo](https://github.com/glennuke1/LML_Installer)

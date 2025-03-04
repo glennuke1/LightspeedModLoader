@@ -76,7 +76,8 @@ namespace LightspeedModLoader
 
             try
             {
-                Process.Start("/mysummercar_Data/Managed/LML_AutoUpdater.exe", "--mscpath=" + Directory.GetCurrentDirectory());
+                if (File.Exists("/mysummercar_Data/Managed/LML_AutoUpdater.exe"))
+                    Process.Start("/mysummercar_Data/Managed/LML_AutoUpdater.exe", "--mscpath=" + Directory.GetCurrentDirectory());
             }
             catch (Exception ex)
             {
@@ -300,7 +301,6 @@ namespace LightspeedModLoader
 
             foreach (MSCLoader.Mod mod in mscloadermodsloader.A_OnGUIMods)
             {
-                LML_Debug.Log("running gui on: " + mod.ID);
                 if (!mod.isDisabled)
                 {
                     try

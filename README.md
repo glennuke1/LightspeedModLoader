@@ -43,3 +43,5 @@ It is written in C#, which means you can freely decompile it and look at all of 
 Even though the mod loader source code is available on github, you can still look through the code of the installer and official mods using [DnSpy](https://github.com/dnSpy/dnSpy)
 
 I have ***NEVER*** written anything with malicious intent and posted it online to purposfully cause harm
+
+[LML Installer Repo](https://github.com/glennuke1/LML_Installer)

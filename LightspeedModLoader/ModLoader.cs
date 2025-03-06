@@ -5,7 +5,6 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
-using System.Net;
 using System.Reflection;
 using UnityEngine;
 using UnityEngine.UI;
@@ -507,11 +506,6 @@ namespace LightspeedModLoader
                     vLabel.text = "Lightspeed Mod Loader\n" + (File.Exists("LML_VERSION") ? File.ReadAllText("LML_VERSION") : "Unknown???");
                     ab.Unload(true);
                 }
-                else
-                {
-                    Cursor.lockState = CursorLockMode.None;
-                    Cursor.visible = true;
-                }
 
                 foreach (Mod mod in A_OnMenuLoadMods)
                 {
@@ -620,6 +614,7 @@ namespace LightspeedModLoader
             {
                 LML_Debug.Log("\nGAME Level loaded. Running mods load methods\n");
                 StartCoroutine(LoadModsAsync());
+                gameObject.AddComponent<GameOptimizations>();
             }
 
             if (loadedLevelName == "Intro")
@@ -651,9 +646,7 @@ namespace LightspeedModLoader
                     if (!mod.isDisabled)
                     {
                         if (Profiling)
-                        {
                             profiler.Start(mod.ID + " PreLoad");
-                        }
 
                         mod.A_PreLoad();
 
@@ -716,15 +709,23 @@ namespace LightspeedModLoader
 
             while (GameObject.Find("PLAYER/Pivot/AnimPivot/Camera/FPSCamera") == null)
             {
-                yield return null;
+                yield return new WaitForSeconds(0.1f);
             }
+
+            int batchSize = 5;
+            int counter = 0;
 
             foreach (Mod mod in A_OnLoadMods)
             {
-                yield return null;
-                try
+                if (!mod.isDisabled)
                 {
-                    if (!mod.isDisabled)
+                    if (counter++ >= batchSize)
+                    {
+                        yield return null;
+                        counter = 0;
+                    }
+
+                    try
                     {
                         if (Profiling)
                             profiler.Start(mod.ID + " OnLoad");
@@ -734,53 +735,67 @@ namespace LightspeedModLoader
                         if (Profiling)
                             profiler.Stop(mod.ID + " OnLoad");
                     }
-                }
-                catch (NullReferenceException e)
-                {
-                    if (LogNullReferenceExceptions)
-                        LML_Debug.Log(string.Format("{0}<b>Details: </b>{1} in Mod <b>{2}</b> in method <b>{3}</b> in object <b>{4}</b>. StackTrace: <b>{5}</b>", Environment.NewLine, e.Message, mod.ID, e.TargetSite, e.Source, e.StackTrace));
-                }
-                catch (Exception e)
-                {
-                    LML_Debug.Log(string.Format("{0}<b>Details: </b>{1} in Mod <b>{2}</b> in <b>{3}</b>", Environment.NewLine, e.Message, mod.ID, new StackTrace(e, true).GetFrame(0).GetMethod()));
+                    catch (NullReferenceException e)
+                    {
+                        if (LogNullReferenceExceptions)
+                            LML_Debug.Log(string.Format("{0}<b>Details: </b>{1} in Mod <b>{2}</b> in method <b>{3}</b> in object <b>{4}</b>. StackTrace: <b>{5}</b>", Environment.NewLine, e.Message, mod.ID, e.TargetSite, e.Source, e.StackTrace));
+                    }
+                    catch (Exception e)
+                    {
+                        LML_Debug.Log(string.Format("{0}<b>Details: </b>{1} in Mod <b>{2}</b> in <b>{3}</b>", Environment.NewLine, e.Message, mod.ID, new StackTrace(e, true).GetFrame(0).GetMethod()));
+                    }
                 }
             }
 
             foreach (MSCLoader.Mod mod in mscloadermodsloader.A_OnLoadMods)
             {
-                yield return null;
-                try
+                if (!mod.isDisabled)
                 {
-                    if (!mod.isDisabled)
+                    if (counter++ >= batchSize)
+                    {
+                        yield return null;
+                        counter = 0;
+                    }
+
+                    try
+                    {
                         mod.A_OnLoad();
-                }
-                catch (NullReferenceException e)
-                {
-                    if (LogNullReferenceExceptions)
-                        LML_Debug.Log(string.Format("{0}<b>Details: </b>{1} in Mod <b>{2}</b> in method <b>{3}</b> in object <b>{4}</b>. StackTrace: <b>{5}</b>", Environment.NewLine, e.Message, mod.ID, e.TargetSite, e.Source, e.StackTrace));
-                }
-                catch (Exception e)
-                {
-                    LML_Debug.Log(string.Format("{0}<b>Details: </b>{1} in Mod <b>{2}</b> in <b>{3}</b>", Environment.NewLine, e.Message, mod.ID, new StackTrace(e, true).GetFrame(0).GetMethod()));
+                    }
+                    catch (NullReferenceException e)
+                    {
+                        if (LogNullReferenceExceptions)
+                            LML_Debug.Log(string.Format("{0}<b>Details: </b>{1} in Mod <b>{2}</b> in method <b>{3}</b> in object <b>{4}</b>. StackTrace: <b>{5}</b>", Environment.NewLine, e.Message, mod.ID, e.TargetSite, e.Source, e.StackTrace));
+                    }
+                    catch (Exception e)
+                    {
+                        LML_Debug.Log(string.Format("{0}<b>Details: </b>{1} in Mod <b>{2}</b> in <b>{3}</b>", Environment.NewLine, e.Message, mod.ID, new StackTrace(e, true).GetFrame(0).GetMethod()));
+                    }
                 }
             }
 
             foreach (MSCLoader.Mod mod in mscloadermodsloader.loadedMods)
             {
-                yield return null;
-                try
+                if (!mod.isDisabled)
                 {
-                    if (!mod.isDisabled)
+                    if (counter++ >= batchSize)
+                    {
+                        yield return null;
+                        counter = 0;
+                    }
+
+                    try
+                    {
                         mod.OnLoad();
-                }
-                catch (NullReferenceException e)
-                {
-                    if (LogNullReferenceExceptions)
-                        LML_Debug.Log(string.Format("{0}<b>Details: </b>{1} in Mod <b>{2}</b> in method <b>{3}</b> in object <b>{4}</b>. StackTrace: <b>{5}</b>", Environment.NewLine, e.Message, mod.ID, e.TargetSite, e.Source, e.StackTrace));
-                }
-                catch (Exception e)
-                {
-                    LML_Debug.Log(string.Format("{0}<b>Details: </b>{1} in Mod <b>{2}</b> in <b>{3}</b>", Environment.NewLine, e.Message, mod.ID, new StackTrace(e, true).GetFrame(0).GetMethod()));
+                    }
+                    catch (NullReferenceException e)
+                    {
+                        if (LogNullReferenceExceptions)
+                            LML_Debug.Log(string.Format("{0}<b>Details: </b>{1} in Mod <b>{2}</b> in method <b>{3}</b> in object <b>{4}</b>. StackTrace: <b>{5}</b>", Environment.NewLine, e.Message, mod.ID, e.TargetSite, e.Source, e.StackTrace));
+                    }
+                    catch (Exception e)
+                    {
+                        LML_Debug.Log(string.Format("{0}<b>Details: </b>{1} in Mod <b>{2}</b> in <b>{3}</b>", Environment.NewLine, e.Message, mod.ID, new StackTrace(e, true).GetFrame(0).GetMethod()));
+                    }
                 }
             }
 
@@ -788,10 +803,15 @@ namespace LightspeedModLoader
 
             foreach (Mod mod in A_PostLoadMods)
             {
-                yield return null;
-                try
+                if (!mod.isDisabled)
                 {
-                    if (!mod.isDisabled)
+                    if (counter++ >= batchSize)
+                    {
+                        yield return null;
+                        counter = 0;
+                    }
+
+                    try
                     {
                         if (Profiling)
                             profiler.Start(mod.ID + " PostLoad");
@@ -801,53 +821,67 @@ namespace LightspeedModLoader
                         if (Profiling)
                             profiler.Stop(mod.ID + " PreLoad");
                     }
-                }
-                catch (NullReferenceException e)
-                {
-                    if (LogNullReferenceExceptions)
-                        LML_Debug.Log(string.Format("{0}<b>Details: </b>{1} in Mod <b>{2}</b> in method <b>{3}</b> in object <b>{4}</b>. StackTrace: <b>{5}</b>", Environment.NewLine, e.Message, mod.ID, e.TargetSite, e.Source, e.StackTrace));
-                }
-                catch (Exception e)
-                {
-                    LML_Debug.Log(string.Format("{0}<b>Details: </b>{1} in Mod <b>{2}</b> in <b>{3}</b>", Environment.NewLine, e.Message, mod.ID, new StackTrace(e, true).GetFrame(0).GetMethod()));
+                    catch (NullReferenceException e)
+                    {
+                        if (LogNullReferenceExceptions)
+                            LML_Debug.Log(string.Format("{0}<b>Details: </b>{1} in Mod <b>{2}</b> in method <b>{3}</b> in object <b>{4}</b>. StackTrace: <b>{5}</b>", Environment.NewLine, e.Message, mod.ID, e.TargetSite, e.Source, e.StackTrace));
+                    }
+                    catch (Exception e)
+                    {
+                        LML_Debug.Log(string.Format("{0}<b>Details: </b>{1} in Mod <b>{2}</b> in <b>{3}</b>", Environment.NewLine, e.Message, mod.ID, new StackTrace(e, true).GetFrame(0).GetMethod()));
+                    }
                 }
             }
 
             foreach (MSCLoader.Mod mod in mscloadermodsloader.A_PostLoadMods)
             {
-                yield return null;
-                try
+                if (!mod.isDisabled)
                 {
-                    if (!mod.isDisabled)
+                    if (counter++ >= batchSize)
+                    {
+                        yield return null;
+                        counter = 0;
+                    }
+
+                    try
+                    {
                         mod.A_PostLoad();
-                }
-                catch (NullReferenceException e)
-                {
-                    if (LogNullReferenceExceptions)
-                        LML_Debug.Log(string.Format("{0}<b>Details: </b>{1} in Mod <b>{2}</b> in method <b>{3}</b> in object <b>{4}</b>. StackTrace: <b>{5}</b>", Environment.NewLine, e.Message, mod.ID, e.TargetSite, e.Source, e.StackTrace));
-                }
-                catch (Exception e)
-                {
-                    LML_Debug.Log(string.Format("{0}<b>Details: </b>{1} in Mod <b>{2}</b> in <b>{3}</b>", Environment.NewLine, e.Message, mod.ID, new StackTrace(e, true).GetFrame(0).GetMethod()));
+                    }
+                    catch (NullReferenceException e)
+                    {
+                        if (LogNullReferenceExceptions)
+                            LML_Debug.Log(string.Format("{0}<b>Details: </b>{1} in Mod <b>{2}</b> in method <b>{3}</b> in object <b>{4}</b>. StackTrace: <b>{5}</b>", Environment.NewLine, e.Message, mod.ID, e.TargetSite, e.Source, e.StackTrace));
+                    }
+                    catch (Exception e)
+                    {
+                        LML_Debug.Log(string.Format("{0}<b>Details: </b>{1} in Mod <b>{2}</b> in <b>{3}</b>", Environment.NewLine, e.Message, mod.ID, new StackTrace(e, true).GetFrame(0).GetMethod()));
+                    }
                 }
             }
 
             foreach (MSCLoader.Mod mod in mscloadermodsloader.loadedMods)
             {
-                yield return null;
-                try
+                if (!mod.isDisabled)
                 {
-                    if (!mod.isDisabled)
+                    if (counter++ >= batchSize)
+                    {
+                        yield return null;
+                        counter = 0;
+                    }
+
+                    try
+                    {
                         mod.SecondPassOnLoad();
-                }
-                catch (NullReferenceException e)
-                {
-                    if (LogNullReferenceExceptions)
-                        LML_Debug.Log(string.Format("{0}<b>Details: </b>{1} in Mod <b>{2}</b> in method <b>{3}</b> in object <b>{4}</b>. StackTrace: <b>{5}</b>", Environment.NewLine, e.Message, mod.ID, e.TargetSite, e.Source, e.StackTrace));
-                }
-                catch (Exception e)
-                {
-                    LML_Debug.Log(string.Format("{0}<b>Details: </b>{1} in Mod <b>{2}</b> in <b>{3}</b>", Environment.NewLine, e.Message, mod.ID, new StackTrace(e, true).GetFrame(0).GetMethod()));
+                    }
+                    catch (NullReferenceException e)
+                    {
+                        if (LogNullReferenceExceptions)
+                            LML_Debug.Log(string.Format("{0}<b>Details: </b>{1} in Mod <b>{2}</b> in method <b>{3}</b> in object <b>{4}</b>. StackTrace: <b>{5}</b>", Environment.NewLine, e.Message, mod.ID, e.TargetSite, e.Source, e.StackTrace));
+                    }
+                    catch (Exception e)
+                    {
+                        LML_Debug.Log(string.Format("{0}<b>Details: </b>{1} in Mod <b>{2}</b> in <b>{3}</b>", Environment.NewLine, e.Message, mod.ID, new StackTrace(e, true).GetFrame(0).GetMethod()));
+                    }
                 }
             }
 
@@ -856,8 +890,6 @@ namespace LightspeedModLoader
             GameObject.Find("ITEMS").FsmInject("Save game", new Action(this.SaveMods));
 
             allModsLoaded = true;
-
-            gameObject.AddComponent<GameOptimizations>();
         }
 
         internal void SaveMods()

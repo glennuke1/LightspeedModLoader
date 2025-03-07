@@ -8,6 +8,10 @@ namespace LightspeedModLoader
 {
     public static class MSCExtensions
     {
+        /// <summary>
+        /// Makes GameObject Pickable
+        /// </summary>
+        /// <param name="gameObject"></param>
         public static void MakePickable(this GameObject gameObject)
         {
             gameObject.layer = LayerMask.NameToLayer("Parts");

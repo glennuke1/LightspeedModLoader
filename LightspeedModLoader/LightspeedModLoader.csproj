@@ -87,8 +87,10 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Extensions\UnityExtensions.cs" />
     <Compile Include="Extensions\MSCExtensions.cs" />
     <Compile Include="GameOptimizations.cs" />
+    <Compile Include="Helpers\UnityHelpers.cs" />
     <Compile Include="LML_Debug.cs" />
     <Compile Include="Entrypoint.cs" />
     <Compile Include="LoadAssets.cs" />

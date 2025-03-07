@@ -45,7 +45,11 @@ namespace LightspeedModLoader
         public SaveLoad saveLoad;
 
         public static bool Profiling;
-        public static bool LogNullReferenceExceptions;
+        public static bool LogNullReferenceExceptions = true;
+
+        public int batchSize = 5;
+
+        internal Slider modFinishedSlider;
 
         internal static Profiler profiler;
 
@@ -106,9 +110,14 @@ namespace LightspeedModLoader
                     LML_Debug.Log("Internal LML Profiler enabled");
                 }
 
-                if (Environment.GetCommandLineArgs().Contains("-LML-LogNullReferenceExceptions"))
+                if (Environment.GetCommandLineArgs().Contains("-LML-DisableLogNullReferenceExceptions"))
                 {
-                    LogNullReferenceExceptions = true;
+                    LogNullReferenceExceptions = false;
+                }
+
+                if (Environment.GetCommandLineArgs().Contains("-LML-DisableLogging"))
+                {
+                    LML_Debug.enableLogging = false;
                 }
 
                 Instance.PreLoadMods();
@@ -504,13 +513,21 @@ namespace LightspeedModLoader
                     AssetBundle ab = LoadAssets.LoadBundle("LightspeedModLoader.Assets.lml.unity3d");
                     Text vLabel = Instantiate(ab.LoadAsset<GameObject>("Info")).transform.Find("Version Label").GetComponent<Text>();
                     vLabel.text = "Lightspeed Mod Loader\n" + (File.Exists("LML_VERSION") ? File.ReadAllText("LML_VERSION") : "Unknown???");
+                    GameObject.DontDestroyOnLoad(vLabel.transform.parent.gameObject);
+                    modFinishedSlider = vLabel.transform.parent.Find("Slider").GetComponent<Slider>();
+                    modFinishedSlider.maxValue = loadedMods.Count + mscloadermodsloader.loadedMods.Count;
+                    modFinishedSlider.value = 0;
                     ab.Unload(true);
                 }
+
+                modFinishedSlider.gameObject.SetActive(true);
+                modFinishedSlider.transform.parent.gameObject.SetActive(true);
 
                 foreach (Mod mod in A_OnMenuLoadMods)
                 {
                     try
                     {
+                        modFinishedSlider.value++;
                         if (!mod.isDisabled)
                         {
                             if (Profiling)
@@ -532,6 +549,7 @@ namespace LightspeedModLoader
                 {
                     try
                     {
+                        modFinishedSlider.value++;
                         if (!mod.isDisabled)
                         {
                             mod.A_OnMenuLoad();
@@ -552,6 +570,7 @@ namespace LightspeedModLoader
                 {
                     try
                     {
+                        modFinishedSlider.value++;
                         if (!mod.isDisabled)
                         {
                             if (firstTimeMainMenuLoad)
@@ -575,6 +594,7 @@ namespace LightspeedModLoader
                 {
                     try
                     {
+                        modFinishedSlider.value++;
                         if (!mod.isDisabled)
                         {
                             if (firstTimeMainMenuLoad)
@@ -603,6 +623,8 @@ namespace LightspeedModLoader
                     }
                 }
 
+                modFinishedSlider.gameObject.SetActive(false);
+
                 if (firstTimeMainMenuLoad)
                 {
                     MSCLoader.ModLoader.LoadModsSettings();
@@ -613,6 +635,9 @@ namespace LightspeedModLoader
             if (loadedLevelName == "GAME")
             {
                 LML_Debug.Log("\nGAME Level loaded. Running mods load methods\n");
+                modFinishedSlider.gameObject.SetActive(true);
+                modFinishedSlider.value = 0;
+                modFinishedSlider.maxValue = loadedMods.Count + mscloadermodsloader.loadedMods.Count;
                 StartCoroutine(LoadModsAsync());
                 gameObject.AddComponent<GameOptimizations>();
             }
@@ -663,6 +688,8 @@ namespace LightspeedModLoader
                 {
                     LML_Debug.Log(string.Format("{0}<b>Details: </b>{1} in Mod <b>{2}</b> in <b>{3}</b>", Environment.NewLine, e.Message, mod.ID, new StackTrace(e, true).GetFrame(0).GetMethod()));
                 }
+
+                modFinishedSlider.value++;
             }
 
             foreach (MSCLoader.Mod mod in mscloadermodsloader.A_PreLoadMods)
@@ -682,6 +709,8 @@ namespace LightspeedModLoader
                 {
                     LML_Debug.Log(string.Format("{0}<b>Details: </b>{1} in Mod <b>{2}</b> in <b>{3}</b>", Environment.NewLine, e.Message, mod.ID, new StackTrace(e, true).GetFrame(0).GetMethod()));
                 }
+
+                modFinishedSlider.value++;
             }
 
             foreach (MSCLoader.Mod mod in mscloadermodsloader.loadedMods)
@@ -701,18 +730,21 @@ namespace LightspeedModLoader
                 {
                     LML_Debug.Log(string.Format("{0}<b>Details: </b>{1} in Mod <b>{2}</b> in <b>{3}</b>", Environment.NewLine, e.Message, mod.ID, new StackTrace(e, true).GetFrame(0).GetMethod()));
                 }
+
+                modFinishedSlider.value++;
             }
 
             LML_Debug.Log("PreLoad Phase Complete");
 
             LML_Debug.Log("Waiting for game to finish loading");
 
+            modFinishedSlider.value = 0;
+
             while (GameObject.Find("PLAYER/Pivot/AnimPivot/Camera/FPSCamera") == null)
             {
                 yield return new WaitForSeconds(0.1f);
             }
 
-            int batchSize = 5;
             int counter = 0;
 
             foreach (Mod mod in A_OnLoadMods)
@@ -745,6 +777,8 @@ namespace LightspeedModLoader
                         LML_Debug.Log(string.Format("{0}<b>Details: </b>{1} in Mod <b>{2}</b> in <b>{3}</b>", Environment.NewLine, e.Message, mod.ID, new StackTrace(e, true).GetFrame(0).GetMethod()));
                     }
                 }
+
+                modFinishedSlider.value++;
             }
 
             foreach (MSCLoader.Mod mod in mscloadermodsloader.A_OnLoadMods)
@@ -771,6 +805,8 @@ namespace LightspeedModLoader
                         LML_Debug.Log(string.Format("{0}<b>Details: </b>{1} in Mod <b>{2}</b> in <b>{3}</b>", Environment.NewLine, e.Message, mod.ID, new StackTrace(e, true).GetFrame(0).GetMethod()));
                     }
                 }
+
+                modFinishedSlider.value++;
             }
 
             foreach (MSCLoader.Mod mod in mscloadermodsloader.loadedMods)
@@ -797,9 +833,13 @@ namespace LightspeedModLoader
                         LML_Debug.Log(string.Format("{0}<b>Details: </b>{1} in Mod <b>{2}</b> in <b>{3}</b>", Environment.NewLine, e.Message, mod.ID, new StackTrace(e, true).GetFrame(0).GetMethod()));
                     }
                 }
+
+                modFinishedSlider.value++;
             }
 
             LML_Debug.Log("OnLoad Phase Complete");
+
+            modFinishedSlider.value = 0;
 
             foreach (Mod mod in A_PostLoadMods)
             {
@@ -831,6 +871,8 @@ namespace LightspeedModLoader
                         LML_Debug.Log(string.Format("{0}<b>Details: </b>{1} in Mod <b>{2}</b> in <b>{3}</b>", Environment.NewLine, e.Message, mod.ID, new StackTrace(e, true).GetFrame(0).GetMethod()));
                     }
                 }
+
+                modFinishedSlider.value++;
             }
 
             foreach (MSCLoader.Mod mod in mscloadermodsloader.A_PostLoadMods)
@@ -857,6 +899,8 @@ namespace LightspeedModLoader
                         LML_Debug.Log(string.Format("{0}<b>Details: </b>{1} in Mod <b>{2}</b> in <b>{3}</b>", Environment.NewLine, e.Message, mod.ID, new StackTrace(e, true).GetFrame(0).GetMethod()));
                     }
                 }
+
+                modFinishedSlider.value++;
             }
 
             foreach (MSCLoader.Mod mod in mscloadermodsloader.loadedMods)
@@ -883,11 +927,17 @@ namespace LightspeedModLoader
                         LML_Debug.Log(string.Format("{0}<b>Details: </b>{1} in Mod <b>{2}</b> in <b>{3}</b>", Environment.NewLine, e.Message, mod.ID, new StackTrace(e, true).GetFrame(0).GetMethod()));
                     }
                 }
+
+                modFinishedSlider.value++;
             }
+
 
             LML_Debug.Log("PostLoad Phase Complete");
 
             GameObject.Find("ITEMS").FsmInject("Save game", new Action(this.SaveMods));
+
+            modFinishedSlider.gameObject.SetActive(false);
+            modFinishedSlider.transform.parent.gameObject.SetActive(false);
 
             allModsLoaded = true;
         }
@@ -976,11 +1026,22 @@ namespace LightspeedModLoader
             return null;
         }
 
+        /// <summary>
+        /// Returns if mods present
+        /// </summary>
+        /// <param name="modID">Mod ID</param>
+        /// <returns>Returns if a mods present</returns>
         public static bool IsModPresent(string modID)
         {
             return GetMod(modID) != null;
         }
 
+
+        /// <summary>
+        /// Returns a mods asset folder path
+        /// </summary>
+        /// <param name="mod">Mod</param>
+        /// <returns>Returns mod asset path</returns>
         public static string GetModAssetsFolder(Mod mod)
         {
             if (!Directory.Exists(Path.Combine(ModLoader.AssetsFolder, mod.ID)))
@@ -990,6 +1051,11 @@ namespace LightspeedModLoader
             return Path.Combine(ModLoader.AssetsFolder, mod.ID);
         }
 
+        /// <summary>
+        /// Returns a mods asset folder
+        /// </summary>
+        /// <param name="mod">MSCLoader mod</param>
+        /// <returns>Returns mod asset path</returns>
         public static string GetModAssetsFolder(MSCLoader.Mod mod)
         {
             if (!Directory.Exists(Path.Combine(ModLoader.AssetsFolder, mod.ID)))
@@ -999,7 +1065,26 @@ namespace LightspeedModLoader
             return Path.Combine(ModLoader.AssetsFolder, mod.ID);
         }
 
+        /// <summary>
+        /// Returns a mods config folder
+        /// </summary>
+        /// <param name="mod">Mod</param>
+        /// <returns>Returns config folder path</returns>
         public static string GetModConfigFolder(Mod mod)
+        {
+            if (!Directory.Exists(Path.Combine(ModLoader.ConfigFolder, mod.ID)))
+            {
+                Directory.CreateDirectory(Path.Combine(ModLoader.ConfigFolder, mod.ID));
+            }
+            return Path.Combine(ModLoader.ConfigFolder, mod.ID);
+        }
+
+        /// <summary>
+        /// Returns a mods config folder
+        /// </summary>
+        /// <param name="mod">MSCLoader Mod</param>
+        /// <returns>Returns config folder path</returns>
+        public static string GetModConfigFolder(MSCLoader.Mod mod)
         {
             if (!Directory.Exists(Path.Combine(ModLoader.ConfigFolder, mod.ID)))
             {
@@ -1025,18 +1110,14 @@ namespace LightspeedModLoader
             }
         }
 
+        /// <summary>
+        /// Checks if a reference is present with the assemblyID
+        /// </summary>
+        /// <param name="assemblyID">assembly ID to check</param>
+        /// <returns>Returns if a reference is present</returns>
         public static bool IsReferencePresent(string assemblyID)
         {
             return Instance.references.Contains(assemblyID);
-        }
-
-        public static string GetModConfigFolder(MSCLoader.Mod mod)
-        {
-            if (!Directory.Exists(Path.Combine(ModLoader.ConfigFolder, mod.ID)))
-            {
-                Directory.CreateDirectory(Path.Combine(ModLoader.ConfigFolder, mod.ID));
-            }
-            return Path.Combine(ModLoader.ConfigFolder, mod.ID);
         }
 
         internal static bool CheckEmptyMethod(MSCLoader.Mod mod, string methodName)

@@ -12,12 +12,23 @@ namespace LightspeedModLoader
     {
 		internal static List<string> assetNames = new List<string>();
 
+		/// <summary>
+		/// Makes GameObject Pickable
+		/// </summary>
+		/// <param name="gameObject"></param>
 		public static void MakeGameObjectPickable(GameObject go)
         {
             go.layer = LayerMask.NameToLayer("Parts");
             go.tag = "PART";
         }
 
+		/// <summary>
+		/// Loads a texture from the mods asset folder with the specified name
+		/// </summary>
+		/// <param name="mod"></param>
+		/// <param name="fileName"></param>
+		/// <param name="normalMap"></param>
+		/// <returns></returns>
 		public static Texture2D LoadTexture(Mod mod, string fileName, bool normalMap = false)
 		{
 			string text = Path.Combine(ModLoader.GetModAssetsFolder(mod), fileName);
@@ -43,6 +54,12 @@ namespace LightspeedModLoader
 			throw new NotSupportedException("<b>LoadTexture() Error:</b> Texture not supported: " + fileName + Environment.NewLine);
 		}
 
+		/// <summary>
+		/// Returns an AssetBundle from the mods asset folder with the specified name
+		/// </summary>
+		/// <param name="mod"></param>
+		/// <param name="bundleName"></param>
+		/// <returns></returns>
 		public static AssetBundle LoadBundle(Mod mod, string bundleName)
 		{
 			string text = Path.Combine(ModLoader.GetModAssetsFolder(mod), bundleName);
@@ -60,6 +77,11 @@ namespace LightspeedModLoader
 			throw new FileNotFoundException("<b>LoadBundle() Error:</b> File not found: <b>" + text + "</b>" + Environment.NewLine, bundleName);
 		}
 
+		/// <summary>
+		/// Returns an AssetBundle from Resources
+		/// </summary>
+		/// <param name="assetBundleFromResources"></param>
+		/// <returns></returns>
 		public static AssetBundle LoadBundle(byte[] assetBundleFromResources)
 		{
 			if (assetBundleFromResources != null)
@@ -75,6 +97,11 @@ namespace LightspeedModLoader
 			throw new Exception("<b>LoadBundle() Error:</b> Resource doesn't exists" + Environment.NewLine);
 		}
 
+		/// <summary>
+		/// Returns an AssetBundle from Embedded Resources
+		/// </summary>
+		/// <param name="assetBundleEmbeddedResources"></param>
+		/// <returns></returns>
 		public static AssetBundle LoadBundle(string assetBundleEmbeddedResources)
 		{
 			AssetBundle result;

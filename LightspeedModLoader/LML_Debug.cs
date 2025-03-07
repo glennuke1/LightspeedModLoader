@@ -12,6 +12,8 @@ namespace LightspeedModLoader
 
         public static event EventHandler<LogEventArgs> MessageLogged;
 
+        public static bool enableLogging = true;
+
         internal static void Init()
         {
             ts.Switch.Level = SourceLevels.All;
@@ -22,68 +24,62 @@ namespace LightspeedModLoader
 
         public static void Log(string message)
         {
-            tw.WriteLine($"[{DateTime.Now:HH:mm:ss}] - {message}");
-            tw.Flush();
-            var eventArgs = new LogEventArgs();
-            eventArgs.Message = message;
-            MessageLogged?.Invoke(null, eventArgs);
+            if (enableLogging)
+            {
+                tw.WriteLine($"[{DateTime.Now:HH:mm:ss}] - {message}");
+                tw.Flush();
+                MessageLogged?.Invoke(null, new LogEventArgs { Message = message });
+            }
         }
 
-        public static void Print(string message)
-        {
-            Log(message);
-        }
+        public static void Print(string message) => Log(message);
+        public static void LogWarning(string message) => Warning(message);
+        public static void LogError(string message) => Error(message);
 
         public static void Warning(string message)
         {
-            tw.WriteLine($"[{DateTime.Now:HH:mm:ss}] [Warning] - <color=yellow>{message}</color>");
-            tw.Flush();
-            var eventArgs = new LogEventArgs();
-            eventArgs.Message = message;
-            MessageLogged?.Invoke(null, eventArgs);
-        }
-
-        public static void LogWarning(string message)
-        {
-            Warning(message);
+            if (enableLogging)
+            {
+                tw.WriteLine($"[{DateTime.Now:HH:mm:ss}] [Warning] - <color=yellow>{message}</color>");
+                tw.Flush();
+                MessageLogged?.Invoke(null, new LogEventArgs { Message = message });
+            }
         }
 
         public static void Error(string message)
         {
-            tw.WriteLine($"[{DateTime.Now:HH:mm:ss}] [Warning] - <color=red>{message}</color>");
-            tw.Flush();
-            var eventArgs = new LogEventArgs();
-            eventArgs.Message = message;
-            MessageLogged?.Invoke(null, eventArgs);
+            if (enableLogging)
+            {
+                tw.WriteLine($"[{DateTime.Now:HH:mm:ss}] [Warning] - <color=red>{message}</color>");
+                tw.Flush();
+                MessageLogged?.Invoke(null, new LogEventArgs { Message = message });
+            }
         }
 
         public static void Error(Exception ex)
         {
-            StackTrace trace = new StackTrace(ex, true);
-
-            Log("Exception: " + ex.Message);
-
-            foreach (var frame in trace.GetFrames())
+            if (enableLogging)
             {
-                var method = frame.GetMethod();
-                string methodName = $"{method.DeclaringType?.FullName}.{method.Name}";
-                int lineNumber = frame.GetFileLineNumber(); // Requires PDB
+                StackTrace trace = new StackTrace(ex, true);
 
-                // Only print if there's a valid line number
-                if (lineNumber > 0)
+                Log("Exception: " + ex.Message);
+
+                foreach (var frame in trace.GetFrames())
                 {
-                    Log($"  at {methodName} in {frame.GetFileName()}:line {lineNumber}");
-                }
-                else
-                {
-                    Log($"  at {methodName}");
+                    var method = frame.GetMethod();
+                    string methodName = $"{method.DeclaringType?.FullName}.{method.Name}";
+                    int lineNumber = frame.GetFileLineNumber();
+
+                    if (lineNumber > 0)
+                    {
+                        Log($"  at {methodName} in {frame.GetFileName()}:line {lineNumber}");
+                    }
+                    else
+                    {
+                        Log($"  at {methodName}");
+                    }
                 }
             }
-        }
-
-        public static void LogError(string message)
-        {
-            Error(message);
         }
 
         public static void DetectNullFields(object obj)

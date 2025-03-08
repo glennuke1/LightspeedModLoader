@@ -498,11 +498,14 @@ namespace LightspeedModLoader
             }
         }
 
+        Text progressText;
+
         internal void OnLevelWasLoaded(int level)
         {
             string loadedLevelName = Application.loadedLevelName;
             if (loadedLevelName == "MainMenu")
             {
+                MSCLoader.ModLoader.CurrentScene = MSCLoader.CurrentScene.MainMenu;
                 GameObject.Find("Quit").SetActive(false);
                 GameObject.Find("Interface/Buttons/ButtonQuit").GetComponent<PlayMakerFSM>().FsmStates[0].RemoveAction(2);
                 allModsLoaded = false;
@@ -511,7 +514,9 @@ namespace LightspeedModLoader
                 {
                     LoadReferences();
                     AssetBundle ab = LoadAssets.LoadBundle("LightspeedModLoader.Assets.lml.unity3d");
-                    Text vLabel = Instantiate(ab.LoadAsset<GameObject>("Info")).transform.Find("Version Label").GetComponent<Text>();
+                    GameObject info = Instantiate(ab.LoadAsset<GameObject>("Info"));
+                    Text vLabel = info.transform.Find("Version Label").GetComponent<Text>();
+                    progressText = info.transform.Find("Progress Label").GetComponent<Text>();
                     vLabel.text = "Lightspeed Mod Loader\n" + (File.Exists("LML_VERSION") ? File.ReadAllText("LML_VERSION") : "Unknown???");
                     GameObject.DontDestroyOnLoad(vLabel.transform.parent.gameObject);
                     modFinishedSlider = vLabel.transform.parent.Find("Slider").GetComponent<Slider>();
@@ -528,6 +533,7 @@ namespace LightspeedModLoader
                     try
                     {
                         modFinishedSlider.value++;
+                        progressText.text = mod.ID;
                         if (!mod.isDisabled)
                         {
                             if (Profiling)
@@ -550,6 +556,7 @@ namespace LightspeedModLoader
                     try
                     {
                         modFinishedSlider.value++;
+                        progressText.text = mod.ID;
                         if (!mod.isDisabled)
                         {
                             mod.A_OnMenuLoad();
@@ -571,6 +578,7 @@ namespace LightspeedModLoader
                     try
                     {
                         modFinishedSlider.value++;
+                        progressText.text = mod.ID;
                         if (!mod.isDisabled)
                         {
                             if (firstTimeMainMenuLoad)
@@ -595,6 +603,7 @@ namespace LightspeedModLoader
                     try
                     {
                         modFinishedSlider.value++;
+                        progressText.text = mod.ID;
                         if (!mod.isDisabled)
                         {
                             if (firstTimeMainMenuLoad)
@@ -624,6 +633,7 @@ namespace LightspeedModLoader
                 }
 
                 modFinishedSlider.gameObject.SetActive(false);
+                progressText.text = "";
 
                 if (firstTimeMainMenuLoad)
                 {
@@ -634,8 +644,10 @@ namespace LightspeedModLoader
 
             if (loadedLevelName == "GAME")
             {
+                MSCLoader.ModLoader.CurrentScene = MSCLoader.CurrentScene.Game;
                 LML_Debug.Log("\nGAME Level loaded. Running mods load methods\n");
                 modFinishedSlider.gameObject.SetActive(true);
+                progressText.text = "";
                 modFinishedSlider.value = 0;
                 modFinishedSlider.maxValue = loadedMods.Count + mscloadermodsloader.loadedMods.Count;
                 StartCoroutine(LoadModsAsync());
@@ -644,6 +656,7 @@ namespace LightspeedModLoader
 
             if (loadedLevelName == "Intro")
             {
+                MSCLoader.ModLoader.CurrentScene = MSCLoader.CurrentScene.NewGameIntro;
                 foreach (Mod mod in A_OnNewGameMods)
                 {
                     mod.A_OnNewGame();
@@ -665,6 +678,7 @@ namespace LightspeedModLoader
         {
             foreach (Mod mod in A_PreLoadMods)
             {
+                progressText.text = mod.ID;
                 yield return null;
                 try
                 {
@@ -694,6 +708,7 @@ namespace LightspeedModLoader
 
             foreach (MSCLoader.Mod mod in mscloadermodsloader.A_PreLoadMods)
             {
+                progressText.text = mod.ID;
                 yield return null;
                 try
                 {
@@ -715,6 +730,7 @@ namespace LightspeedModLoader
 
             foreach (MSCLoader.Mod mod in mscloadermodsloader.loadedMods)
             {
+                progressText.text = mod.ID;
                 yield return null;
                 try
                 {
@@ -749,6 +765,7 @@ namespace LightspeedModLoader
 
             foreach (Mod mod in A_OnLoadMods)
             {
+                progressText.text = mod.ID;
                 if (!mod.isDisabled)
                 {
                     if (counter++ >= batchSize)
@@ -783,6 +800,7 @@ namespace LightspeedModLoader
 
             foreach (MSCLoader.Mod mod in mscloadermodsloader.A_OnLoadMods)
             {
+                progressText.text = mod.ID;
                 if (!mod.isDisabled)
                 {
                     if (counter++ >= batchSize)
@@ -811,6 +829,7 @@ namespace LightspeedModLoader
 
             foreach (MSCLoader.Mod mod in mscloadermodsloader.loadedMods)
             {
+                progressText.text = mod.ID;
                 if (!mod.isDisabled)
                 {
                     if (counter++ >= batchSize)
@@ -843,6 +862,7 @@ namespace LightspeedModLoader
 
             foreach (Mod mod in A_PostLoadMods)
             {
+                progressText.text = mod.ID;
                 if (!mod.isDisabled)
                 {
                     if (counter++ >= batchSize)
@@ -877,6 +897,7 @@ namespace LightspeedModLoader
 
             foreach (MSCLoader.Mod mod in mscloadermodsloader.A_PostLoadMods)
             {
+                progressText.text = mod.ID;
                 if (!mod.isDisabled)
                 {
                     if (counter++ >= batchSize)
@@ -905,6 +926,7 @@ namespace LightspeedModLoader
 
             foreach (MSCLoader.Mod mod in mscloadermodsloader.loadedMods)
             {
+                progressText.text = mod.ID;
                 if (!mod.isDisabled)
                 {
                     if (counter++ >= batchSize)

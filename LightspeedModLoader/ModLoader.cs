@@ -8,6 +8,8 @@ using System.Linq;
 using System.Reflection;
 using UnityEngine;
 using UnityEngine.UI;
+using System.Threading;
+using LightspeedModLoader.Threading;
 
 namespace LightspeedModLoader
 {
@@ -52,6 +54,8 @@ namespace LightspeedModLoader
         internal Slider modFinishedSlider;
 
         internal static Profiler profiler;
+
+        public bool useAsyncUpdate = false;
 
         internal bool firstTimeMainMenuLoad = true;
 
@@ -120,6 +124,8 @@ namespace LightspeedModLoader
                     LML_Debug.enableLogging = false;
                 }
 
+                gameObject.AddComponent<UnityMainThreadDispatcher>();
+
                 Instance.PreLoadMods();
             }
         }
@@ -156,6 +162,11 @@ namespace LightspeedModLoader
             LML_Debug.Log("Mods actions/methods loaded");
 
             saveLoad.Load();
+
+            if (useAsyncUpdate)
+            {
+                StartCoroutine(UpdateAsync());
+            }
         }
 
         private void LoadDLL(string file)
@@ -356,71 +367,166 @@ namespace LightspeedModLoader
 
         internal void Update()
         {
-            foreach (Mod mod in A_UpdateMods)
+            if (!useAsyncUpdate)
             {
-                if (!mod.isDisabled)
+                foreach (Mod mod in A_UpdateMods)
                 {
-                    try
+                    if (!mod.isDisabled)
                     {
-                        if (allModsLoaded || mod.LoadInMenu)
+                        try
                         {
-                            mod.A_Update();
+                            if (allModsLoaded || mod.LoadInMenu)
+                            {
+                                mod.A_Update();
+                            }
+                        }
+                        catch (NullReferenceException e)
+                        {
+                            if (LogNullReferenceExceptions)
+                                LML_Debug.Log(string.Format("{0}<b>Details: </b>{1} in Mod <b>{2}</b> in method <b>{3}</b> in object <b>{4}</b>. StackTrace: <b>{5}</b>", Environment.NewLine, e.Message, mod.ID, e.TargetSite, e.Source, e.StackTrace));
+                        }
+                        catch (Exception e)
+                        {
+                            LML_Debug.Log(string.Format("{0}<b>Details: </b>{1} in Mod <b>{2}</b> in <b>{3}</b>", Environment.NewLine, e.Message, mod.ID, new StackTrace(e, true).GetFrame(0).GetMethod()));
                         }
                     }
-                    catch (NullReferenceException e)
+                }
+
+                foreach (MSCLoader.Mod mod in mscloadermodsloader.A_UpdateMods)
+                {
+                    if (!mod.isDisabled)
                     {
-                        if (LogNullReferenceExceptions)
-                            LML_Debug.Log(string.Format("{0}<b>Details: </b>{1} in Mod <b>{2}</b> in method <b>{3}</b> in object <b>{4}</b>. StackTrace: <b>{5}</b>", Environment.NewLine, e.Message, mod.ID, e.TargetSite, e.Source, e.StackTrace));
+                        try
+                        {
+                            if (allModsLoaded || mod.LoadInMenu)
+                            {
+                                mod.A_Update();
+                            }
+                        }
+                        catch (NullReferenceException e)
+                        {
+                            if (LogNullReferenceExceptions)
+                                LML_Debug.Log(string.Format("{0}<b>Details: </b>{1} in Mod <b>{2}</b> in method <b>{3}</b> in object <b>{4}</b>. StackTrace: <b>{5}</b>", Environment.NewLine, e.Message, mod.ID, e.TargetSite, e.Source, e.StackTrace));
+                        }
+                        catch (Exception e)
+                        {
+                            LML_Debug.Log(string.Format("{0}<b>Details: </b>{1} in Mod <b>{2}</b> in <b>{3}</b>", Environment.NewLine, e.Message, mod.ID, new StackTrace(e, true).GetFrame(0).GetMethod()));
+                        }
                     }
-                    catch (Exception e)
+                }
+
+                foreach (MSCLoader.Mod mod in mscloadermodsloader.loadedMods)
+                {
+                    if (!mod.isDisabled)
                     {
-                        LML_Debug.Log(string.Format("{0}<b>Details: </b>{1} in Mod <b>{2}</b> in <b>{3}</b>", Environment.NewLine, e.Message, mod.ID, new StackTrace(e, true).GetFrame(0).GetMethod()));
+                        try
+                        {
+                            if (allModsLoaded || mod.LoadInMenu)
+                            {
+                                mod.Update();
+                            }
+                        }
+                        catch (NullReferenceException e)
+                        {
+                            if (LogNullReferenceExceptions)
+                                LML_Debug.Log(string.Format("{0}<b>Details: </b>{1} in Mod <b>{2}</b> in method <b>{3}</b> in object <b>{4}</b>. StackTrace: <b>{5}</b>", Environment.NewLine, e.Message, mod.ID, e.TargetSite, e.Source, e.StackTrace));
+                        }
+                        catch (Exception e)
+                        {
+                            LML_Debug.Log(string.Format("{0}<b>Details: </b>{1} in Mod <b>{2}</b> in <b>{3}</b>", Environment.NewLine, e.Message, mod.ID, new StackTrace(e, true).GetFrame(0).GetMethod()));
+                        }
                     }
                 }
             }
+        }
 
-            foreach (MSCLoader.Mod mod in mscloadermodsloader.A_UpdateMods)
+        internal IEnumerator UpdateAsync()
+        {
+            int counter = 0;
+
+            while (true)
             {
-                if (!mod.isDisabled)
+                foreach (Mod mod in A_UpdateMods)
                 {
-                    try
+                    if (counter++ >= 5)
                     {
-                        if (allModsLoaded || mod.LoadInMenu)
+                        yield return null;
+                        counter = 0;
+                    }
+                    if (!mod.isDisabled)
+                    {
+                        try
                         {
-                            mod.A_Update();
+                            if (allModsLoaded || mod.LoadInMenu)
+                            {
+                                mod.A_Update();
+                            }
                         }
-                    }
-                    catch (NullReferenceException e)
-                    {
-                        if (LogNullReferenceExceptions)
-                            LML_Debug.Log(string.Format("{0}<b>Details: </b>{1} in Mod <b>{2}</b> in method <b>{3}</b> in object <b>{4}</b>. StackTrace: <b>{5}</b>", Environment.NewLine, e.Message, mod.ID, e.TargetSite, e.Source, e.StackTrace));
-                    }
-                    catch (Exception e)
-                    {
-                        LML_Debug.Log(string.Format("{0}<b>Details: </b>{1} in Mod <b>{2}</b> in <b>{3}</b>", Environment.NewLine, e.Message, mod.ID, new StackTrace(e, true).GetFrame(0).GetMethod()));
+                        catch (NullReferenceException e)
+                        {
+                            if (LogNullReferenceExceptions)
+                                LML_Debug.Log(string.Format("{0}<b>Details: </b>{1} in Mod <b>{2}</b> in method <b>{3}</b> in object <b>{4}</b>. StackTrace: <b>{5}</b>", Environment.NewLine, e.Message, mod.ID, e.TargetSite, e.Source, e.StackTrace));
+                        }
+                        catch (Exception e)
+                        {
+                            LML_Debug.Log(string.Format("{0}<b>Details: </b>{1} in Mod <b>{2}</b> in <b>{3}</b>", Environment.NewLine, e.Message, mod.ID, new StackTrace(e, true).GetFrame(0).GetMethod()));
+                        }
                     }
                 }
-            }
 
-            foreach (MSCLoader.Mod mod in mscloadermodsloader.loadedMods)
-            {
-                if (!mod.isDisabled)
+                foreach (MSCLoader.Mod mod in mscloadermodsloader.A_UpdateMods)
                 {
-                    try
+                    if (counter++ >= 5)
                     {
-                        if (allModsLoaded || mod.LoadInMenu)
+                        yield return null;
+                        counter = 0;
+                    }
+                    if (!mod.isDisabled)
+                    {
+                        try
                         {
-                            mod.Update();
+                            if (allModsLoaded || mod.LoadInMenu)
+                            {
+                                mod.A_Update();
+                            }
+                        }
+                        catch (NullReferenceException e)
+                        {
+                            if (LogNullReferenceExceptions)
+                                LML_Debug.Log(string.Format("{0}<b>Details: </b>{1} in Mod <b>{2}</b> in method <b>{3}</b> in object <b>{4}</b>. StackTrace: <b>{5}</b>", Environment.NewLine, e.Message, mod.ID, e.TargetSite, e.Source, e.StackTrace));
+                        }
+                        catch (Exception e)
+                        {
+                            LML_Debug.Log(string.Format("{0}<b>Details: </b>{1} in Mod <b>{2}</b> in <b>{3}</b>", Environment.NewLine, e.Message, mod.ID, new StackTrace(e, true).GetFrame(0).GetMethod()));
                         }
                     }
-                    catch (NullReferenceException e)
+                }
+
+                foreach (MSCLoader.Mod mod in mscloadermodsloader.loadedMods)
+                {
+                    if (counter++ >= 5)
                     {
-                        if (LogNullReferenceExceptions)
-                            LML_Debug.Log(string.Format("{0}<b>Details: </b>{1} in Mod <b>{2}</b> in method <b>{3}</b> in object <b>{4}</b>. StackTrace: <b>{5}</b>", Environment.NewLine, e.Message, mod.ID, e.TargetSite, e.Source, e.StackTrace));
+                        yield return null;
+                        counter = 0;
                     }
-                    catch (Exception e)
+                    if (!mod.isDisabled)
                     {
-                        LML_Debug.Log(string.Format("{0}<b>Details: </b>{1} in Mod <b>{2}</b> in <b>{3}</b>", Environment.NewLine, e.Message, mod.ID, new StackTrace(e, true).GetFrame(0).GetMethod()));
+                        try
+                        {
+                            if (allModsLoaded || mod.LoadInMenu)
+                            {
+                                mod.Update();
+                            }
+                        }
+                        catch (NullReferenceException e)
+                        {
+                            if (LogNullReferenceExceptions)
+                                LML_Debug.Log(string.Format("{0}<b>Details: </b>{1} in Mod <b>{2}</b> in method <b>{3}</b> in object <b>{4}</b>. StackTrace: <b>{5}</b>", Environment.NewLine, e.Message, mod.ID, e.TargetSite, e.Source, e.StackTrace));
+                        }
+                        catch (Exception e)
+                        {
+                            LML_Debug.Log(string.Format("{0}<b>Details: </b>{1} in Mod <b>{2}</b> in <b>{3}</b>", Environment.NewLine, e.Message, mod.ID, new StackTrace(e, true).GetFrame(0).GetMethod()));
+                        }
                     }
                 }
             }
@@ -651,7 +757,6 @@ namespace LightspeedModLoader
                 modFinishedSlider.value = 0;
                 modFinishedSlider.maxValue = loadedMods.Count + mscloadermodsloader.loadedMods.Count;
                 StartCoroutine(LoadModsAsync());
-                gameObject.AddComponent<GameOptimizations>();
             }
 
             if (loadedLevelName == "Intro")
@@ -961,6 +1066,8 @@ namespace LightspeedModLoader
             modFinishedSlider.gameObject.SetActive(false);
             modFinishedSlider.transform.parent.gameObject.SetActive(false);
 
+            gameObject.AddComponent<GameOptimizations>();
+
             allModsLoaded = true;
         }
 
@@ -1161,15 +1268,11 @@ namespace LightspeedModLoader
                 foreach (MonoBehaviour script in obj.GetComponents<MonoBehaviour>())
                 {
                     Type scriptType = script.GetType();
+                    Instance.monoBehavioursToProfile.Add(script);
 
-                    if (Instance.IsModdedClass(scriptType))
+                    if (!Instance.monoBehavioursProfiled.ContainsKey(script))
                     {
-                        Instance.monoBehavioursToProfile.Add(script);
-
-                        if (!Instance.monoBehavioursProfiled.ContainsKey(script))
-                        {
-                            Instance.monoBehavioursProfiled[script] = new List<float>();
-                        }
+                        Instance.monoBehavioursProfiled[script] = new List<float>();
                     }
                 }
             }
@@ -1183,19 +1286,24 @@ namespace LightspeedModLoader
 
             Stopwatch stopwatch = new Stopwatch();
 
-            float endTime = Time.time + 10f;
+            float endTime = Time.time + 5f;
+
+            int counter = 0;
 
             while (Time.time < endTime)
             {
                 foreach (MonoBehaviour script in monoBehavioursToProfile)
                 {
-                    yield return null;
-                    Type scriptType = script.GetType();
-
-                    if (IsModdedClass(scriptType))
+                    if (counter++ >= 50)
                     {
-                        MethodInfo updateMethod = scriptType.GetMethod("Update", BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic);
-                        if (updateMethod != null)
+                        yield return null;
+                        counter = 0;
+                    }
+                    Type scriptType = script.GetType();
+                    MethodInfo updateMethod = scriptType.GetMethod("Update", BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic);
+                    if (updateMethod != null)
+                    {
+                        if (script.enabled && script.gameObject.activeInHierarchy)
                         {
                             stopwatch.Start();
                             try
@@ -1205,6 +1313,7 @@ namespace LightspeedModLoader
                             catch { }
                             stopwatch.Stop();
                             monoBehavioursProfiled[script].Add((float)stopwatch.Elapsed.TotalMilliseconds);
+                            LML_Debug.Log("adding " + script.name);
                             stopwatch.Reset();
                         }
                     }
@@ -1213,17 +1322,17 @@ namespace LightspeedModLoader
                 yield return null;
             }
 
-            LML_Debug.Log("Deep profiling completed.");
+            List<KeyValuePair<MonoBehaviour, float>> sortedProfiles = new List<KeyValuePair<MonoBehaviour, float>>();
 
             foreach (KeyValuePair<MonoBehaviour, List<float>> entry in monoBehavioursProfiled)
             {
-                float totalTime = 0f;
-                float highestTime = 0f;
-
                 if (entry.Value.Count == 0)
                 {
                     continue;
                 }
+
+                float totalTime = 0f;
+                float highestTime = 0f;
 
                 foreach (float f in entry.Value)
                 {
@@ -1233,8 +1342,25 @@ namespace LightspeedModLoader
 
                 float averageTime = totalTime / entry.Value.Count;
 
-                LML_Debug.Log($"{entry.Key.GetType()} Update method took avg: {averageTime:F3} ms, highest: {highestTime:F3} ms");
+                sortedProfiles.Add(new KeyValuePair<MonoBehaviour, float>(entry.Key, averageTime));
             }
+
+            sortedProfiles.Sort((a, b) => b.Value.CompareTo(a.Value));
+
+            string result = "";
+
+            foreach (var entry in sortedProfiles)
+            {
+                MonoBehaviour behaviour = entry.Key;
+                float averageTime = entry.Value;
+                float highestTime = monoBehavioursProfiled[behaviour].Max();
+
+                result += $"{behaviour.GetType()} On GameObject {behaviour.gameObject.name} Update method took avg: {averageTime:F3} ms ({averageTime/(1000/(1 / Time.deltaTime)) * 100:F3}%), highest: {highestTime:F3} ms \n";
+            }
+
+            File.WriteAllText("ProfilerResult.txt", result);
+
+            LML_Debug.Log("Deep profiling completed.");
 
         }
 

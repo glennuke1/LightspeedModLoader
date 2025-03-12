@@ -30,15 +30,21 @@ namespace LightspeedModLoader
         Transform doorRight;
         #endregion
 
+        private List<GameObject> gameObjects = new List<GameObject>();
+
         private void Start()
         {
-            Player = Camera.main.gameObject;
-
             StartCoroutine(optimize());
         }
 
         IEnumerator optimize()
         {
+            while (Player == null)
+            {
+                yield return null;
+                Player = GameObject.Find("PLAYER");
+            }
+
             while (satsuma == null)
             {
                 yield return null;
@@ -71,9 +77,39 @@ namespace LightspeedModLoader
                 hayosiko = GameObject.Find("HAYOSIKO(1500kg, 250)");
             }
 
+            gameObjects.Add(GameObject.Find("BOAT"));
+            gameObjects.Add(GameObject.Find("COTTAGE"));
+            gameObjects.Add(GameObject.Find("DANCEHALL"));
+            gameObjects.Add(GameObject.Find("INSPECTION"));
+            gameObjects.Add(GameObject.Find("LANDFILL"));
+            gameObjects.Add(GameObject.Find("PERAJARVI"));
+            gameObjects.Add(GameObject.Find("RYKIPOHJA"));
+            gameObjects.Add(GameObject.Find("SOCCER"));
+            gameObjects.Add(GameObject.Find("WATERFACILITY"));
+            gameObjects.Add(GameObject.Find("TREES1_COLL"));
+            gameObjects.Add(GameObject.Find("TREES2_COLL"));
+            gameObjects.Add(GameObject.Find("TREES3_COLL"));
+            gameObjects.Add(GameObject.Find("STORE"));
+            gameObjects.Add(GameObject.Find("CABIN"));
+            gameObjects.Add(GameObject.Find("AIRPORT"));
+
+            foreach (Transform t in GameObject.Find("MAP/Buildings").transform)
+            {
+                if (t.gameObject.name != "DINGONBIISI")
+                    gameObjects.Add(t.gameObject);
+            }
+
             while (optimizing)
             {
                 yield return new WaitForSeconds(3f);
+
+                for (int i = 0; i < gameObjects.Count; i++)
+                {
+                    gameObjects[i].SetActive(Vector3.Distance(Player.transform.position, gameObjects[i].transform.position) < 200);
+                }
+
+                yield return new WaitForSeconds(1f);
+
                 if (SuckSatsumasExhaustPipeForFPS)
                 {
                     if (Vector3.Distance(satsuma.transform.position, Player.transform.position) > 100)

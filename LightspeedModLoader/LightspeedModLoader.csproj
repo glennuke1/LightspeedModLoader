@@ -103,6 +103,8 @@
     <Compile Include="Profiler.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="SaveLoad.cs" />
+    <Compile Include="Threads.cs" />
+    <Compile Include="UnityMainThreadDispatcher.cs" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Builds\" />

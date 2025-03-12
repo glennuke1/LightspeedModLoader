@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using UnityEngine;
+﻿using UnityEngine;
 
 namespace LightspeedModLoader
 {
@@ -10,7 +6,7 @@ namespace LightspeedModLoader
     {
 
         /// <summary>
-        /// Returns a GameObject with the specified name
+        /// Returns a GameObject with the specified name. Make sure to cache this GameObject and not run this every frame!!!
         /// </summary>
         /// <param name="name"></param>
         /// <returns>The GameObject</returns>

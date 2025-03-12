@@ -1,6 +1,8 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.Reflection;
+using System.Threading;
 
 namespace LightspeedModLoader
 {
@@ -9,6 +11,10 @@ namespace LightspeedModLoader
         private static TraceSource ts = new TraceSource("LML");
 
         private static TextWriterTraceListener tw = new TextWriterTraceListener("LML_Preloader.txt");
+
+        private static Queue<string> logQueue = new Queue<string>();
+        private static object queueLock = new object();
+        private static bool isProcessing = false;
 
         public static event EventHandler<LogEventArgs> MessageLogged;
 
@@ -20,19 +26,28 @@ namespace LightspeedModLoader
             ts.Listeners.Add(tw);
             Log("Lightspeed Preloader Log " + DateTime.Now.ToString("u"));
             Log(string.Format("Version {0}", Assembly.GetExecutingAssembly().GetName().Version));
+            StartLogProcessing();
         }
 
         public static void Log(string message)
         {
             if (enableLogging)
             {
-                tw.WriteLine($"[{DateTime.Now:HH:mm:ss}] - {message}");
-                tw.Flush();
+                lock (queueLock)
+                {
+                    logQueue.Enqueue($"[{DateTime.Now:HH:mm:ss}] - {message}");
+                }
                 MessageLogged?.Invoke(null, new LogEventArgs { Message = message });
             }
         }
 
+        public static void Log(object message)
+        {
+            Log(message.ToString());
+        }
+
         public static void Print(string message) => Log(message);
+        public static void Print(object message) => Log(message);
         public static void LogWarning(string message) => Warning(message);
         public static void LogError(string message) => Error(message);
 
@@ -78,6 +93,38 @@ namespace LightspeedModLoader
                     {
                         Log($"  at {methodName}");
                     }
+                }
+            }
+        }
+
+        private static void StartLogProcessing()
+        {
+            if (isProcessing) return;
+            isProcessing = true;
+
+            Thread logThread = new Thread(() =>
+            {
+                while (isProcessing)
+                {
+                    ProcessLogQueue();
+                    Thread.Sleep(100);
+                }
+            })
+            {
+                IsBackground = true
+            };
+            logThread.Start();
+        }
+
+        private static void ProcessLogQueue()
+        {
+            lock (queueLock)
+            {
+                while (logQueue.Count > 0)
+                {
+                    string logEntry = logQueue.Dequeue();
+                    tw.WriteLine(logEntry);
+                    tw.Flush();
                 }
             }
         }

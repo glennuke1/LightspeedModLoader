@@ -124,8 +124,8 @@ namespace LightspeedModLoader
                 {
                     string logEntry = logQueue.Dequeue();
                     tw.WriteLine(logEntry);
-                    tw.Flush();
                 }
+                tw.Flush();
             }
         }
 

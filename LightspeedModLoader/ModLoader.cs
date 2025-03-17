@@ -124,6 +124,8 @@ namespace LightspeedModLoader
                     LML_Debug.enableLogging = false;
                 }
 
+                LML_Debug.Init();
+
                 gameObject.AddComponent<UnityMainThreadDispatcher>();
 
                 Instance.PreLoadMods();
@@ -377,7 +379,13 @@ namespace LightspeedModLoader
                         {
                             if (allModsLoaded || mod.LoadInMenu)
                             {
+                                if (Profiling)
+                                    profiler.Start(mod.ID + "Update");
+
                                 mod.A_Update();
+
+                                if (Profiling)
+                                    profiler.Stop(mod.ID + "Update");
                             }
                         }
                         catch (NullReferenceException e)
@@ -400,7 +408,13 @@ namespace LightspeedModLoader
                         {
                             if (allModsLoaded || mod.LoadInMenu)
                             {
+                                if (Profiling)
+                                    profiler.Start(mod.ID + "Update");
+
                                 mod.A_Update();
+                                
+                                if (Profiling)
+                                    profiler.Stop(mod.ID + "Update");
                             }
                         }
                         catch (NullReferenceException e)
@@ -423,7 +437,13 @@ namespace LightspeedModLoader
                         {
                             if (allModsLoaded || mod.LoadInMenu)
                             {
+                                if (Profiling)
+                                    profiler.Start(mod.ID + "Update");
+
                                 mod.Update();
+
+                                if (Profiling)
+                                    profiler.Stop(mod.ID + "Update");
                             }
                         }
                         catch (NullReferenceException e)

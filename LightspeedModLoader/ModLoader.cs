@@ -5,11 +5,10 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
+using System.Net;
 using System.Reflection;
 using UnityEngine;
 using UnityEngine.UI;
-using System.Threading;
-using LightspeedModLoader.Threading;
 
 namespace LightspeedModLoader
 {
@@ -83,8 +82,15 @@ namespace LightspeedModLoader
 
             try
             {
-                if (File.Exists("/mysummercar_Data/Managed/LML_AutoUpdater.exe"))
-                    Process.Start("/mysummercar_Data/Managed/LML_AutoUpdater.exe", "--mscpath=" + Directory.GetCurrentDirectory());
+                /*using (WebClient wc = new WebClient())
+                {
+                    wc.DownloadFile("https://github.com/glennuke1/LightspeedModLoader/raw/refs/heads/master/LightspeedModLoader/Builds/LML_AutoUpdater.exe", "/mysummercar_Data/Managed/LML_AutoUpdater.exe");
+                }*/
+
+                if (File.Exists(Path.GetFullPath(Directory.GetCurrentDirectory() + "/mysummercar_Data/Managed/LML_AutoUpdater.exe")))
+                {
+                    Process.Start(Path.GetFullPath(Directory.GetCurrentDirectory() + "/mysummercar_Data/Managed/LML_AutoUpdater.exe"), "--mscpath=\"" + Directory.GetCurrentDirectory() + "\"");
+                }
             }
             catch (Exception ex)
             {
@@ -412,7 +418,7 @@ namespace LightspeedModLoader
                                     profiler.Start(mod.ID + "Update");
 
                                 mod.A_Update();
-                                
+
                                 if (Profiling)
                                     profiler.Stop(mod.ID + "Update");
                             }
@@ -1375,7 +1381,7 @@ namespace LightspeedModLoader
                 float averageTime = entry.Value;
                 float highestTime = monoBehavioursProfiled[behaviour].Max();
 
-                result += $"{behaviour.GetType()} On GameObject {behaviour.gameObject.name} Update method took avg: {averageTime:F3} ms ({averageTime/(1000/(1 / Time.deltaTime)) * 100:F3}%), highest: {highestTime:F3} ms \n";
+                result += $"{behaviour.GetType()} On GameObject {behaviour.gameObject.name} Update method took avg: {averageTime:F3} ms ({averageTime / (1000 / (1 / Time.deltaTime)) * 100:F3}%), highest: {highestTime:F3} ms \n";
             }
 
             File.WriteAllText("ProfilerResult.txt", result);

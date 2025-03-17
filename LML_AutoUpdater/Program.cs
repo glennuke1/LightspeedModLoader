@@ -1,4 +1,5 @@
 ﻿using Ionic.Zip;
+using System;
 using System.Diagnostics;
 using System.IO;
 using System.Net;
@@ -9,9 +10,12 @@ namespace LML_AutoUpdater
     {
         static void Main(string[] args)
         {
-            if (args[0] == "--mscpath=")
+            foreach (string arg in args)
             {
-                mscpath = args[0].Split('=')[1];
+                if (arg.StartsWith("--mscpath="))
+                {
+                    mscpath = arg.Substring(10).Trim('"');
+                }
             }
 
             if (!IsUpdated())
@@ -23,15 +27,17 @@ namespace LML_AutoUpdater
 
                 InstallFiles();
 
-                Process.Start(mscpath + "mysummercar.exe");
+                Process.Start(mscpath + "/mysummercar.exe");
             }
+
+            Environment.Exit(0);
         }
 
         static string mscpath;
 
         private static bool IsUpdated()
         {
-            if (!File.Exists(mscpath + "LML_VERSION"))
+            if (!File.Exists(mscpath + "/LML_VERSION"))
             {
                 return false;
             }
@@ -42,7 +48,9 @@ namespace LML_AutoUpdater
                 onlineVersion = wc.DownloadString("https://raw.githubusercontent.com/glennuke1/LightspeedModLoader/refs/heads/master/LightspeedModLoader/Builds/VERSION");
             }
 
-            if (onlineVersion == File.ReadAllText(mscpath + "LML_VERSION"))
+            string localVersion = File.ReadAllText(mscpath + "/LML_VERSION");
+
+            if (float.Parse(localVersion.Split(' ')[1]) >= float.Parse(onlineVersion.Split(' ')[1]))
             {
                 return true;
             }
@@ -56,25 +64,27 @@ namespace LML_AutoUpdater
         {
             using (var client = new WebClient())
             {
-                client.DownloadFile("https://github.com/glennuke1/LightspeedModLoader/raw/refs/heads/master/LightspeedModLoader/Builds/doorstop.zip", mscpath + "doorstop.zip");
-                client.DownloadFile("https://github.com/glennuke1/LightspeedModLoader/raw/refs/heads/master/LightspeedModLoader/Builds/References.zip", mscpath + "References.zip");
-                client.DownloadFile("https://github.com/glennuke1/LightspeedModLoader/raw/refs/heads/master/LightspeedModLoader/Builds/NeededDLLS.zip", mscpath + "NeededDLLS.zip");
-                client.DownloadFile("https://github.com/glennuke1/LightspeedModLoader/raw/refs/heads/master/LightspeedModLoader/Builds/VERSION", mscpath + "LML_VERSION");
+                client.DownloadFile("https://github.com/glennuke1/LightspeedModLoader/raw/refs/heads/master/LightspeedModLoader/Builds/doorstop.zip", mscpath + "/doorstop.zip");
+                client.DownloadFile("https://github.com/glennuke1/LightspeedModLoader/raw/refs/heads/master/LightspeedModLoader/Builds/NeededDLLS.zip", mscpath + "/NeededDLLS.zip");
+                client.DownloadFile("https://github.com/glennuke1/LightspeedModLoader/raw/refs/heads/master/LightspeedModLoader/Builds/VERSION", mscpath + "/LML_VERSION");
             }
 
             ZipFile zip = ZipFile.Read("doorstop.zip");
             zip.ExtractAll(mscpath, ExtractExistingFileAction.OverwriteSilently);
-
-            ZipFile zip1 = ZipFile.Read("References.zip");
-            zip1.ExtractAll(Path.Combine(mscpath, "mysummercar_Data/Managed"), ExtractExistingFileAction.OverwriteSilently);
+            zip.Dispose();
 
             ZipFile zip2 = ZipFile.Read("NeededDLLS.zip");
-            zip2.ExtractAll(Path.Combine(mscpath, "mysummercar_Data/Managed"), ExtractExistingFileAction.OverwriteSilently);
+            zip2.ExtractAll(Path.Combine(mscpath, "mysummercar_Data/Managed"), ExtractExistingFileAction.DoNotOverwrite);
+            zip2.Dispose();
 
             using (var client = new WebClient())
             {
                 client.DownloadFile("https://github.com/glennuke1/LightspeedModLoader/raw/refs/heads/master/LightspeedModLoader/Builds/LightspeedModLoader.dll", mscpath + "/mysummercar_Data/Managed/LightspeedModLoader.dll");
                 client.DownloadFile("https://github.com/glennuke1/LightspeedModLoader/raw/refs/heads/master/LightspeedModLoader/Builds/MSCLoader.dll", mscpath + "/mysummercar_Data/Managed/MSCLoader.dll");
+
+                client.DownloadFile("https://github.com/glennuke1/LightspeedModLoader/raw/refs/heads/master/Official%20Mods/LML_Default_Console.dll", mscpath + "/mods/LML_Default_Console.dll");
+                client.DownloadFile("https://github.com/glennuke1/LightspeedModLoader/raw/refs/heads/master/Official%20Mods/LML_Default_ModSettings.dll", mscpath + "/mods/LML_Default_ModSettings.dll");
+                client.DownloadFile("https://github.com/glennuke1/LightspeedModLoader/raw/refs/heads/master/Official%20Mods/LML_DevToolset.dll", mscpath + "/mods/LML_DevToolset.dll");
             }
         }
     }

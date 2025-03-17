@@ -26,8 +26,6 @@ namespace LML_AutoUpdater
                 }
 
                 InstallFiles();
-
-                Process.Start(mscpath + "/mysummercar.exe");
             }
 
             Environment.Exit(0);

@@ -52,13 +52,13 @@ namespace LightspeedModLoader
 
             string json = JsonConvert.SerializeObject(saveData);
 
-            string path = Path.Combine(Application.persistentDataPath, "LML_Save.json");
+            string path = Path.Combine(Application.dataPath, "LML_Save.json");
             File.WriteAllText(path, json);
         }
 
         public void Load()
         {
-            string path = Path.Combine(Application.persistentDataPath, "LML_Save.json");
+            string path = Path.Combine(Application.dataPath, "LML_Save.json");
             if (File.Exists(path))
             {
                 string json = File.ReadAllText(path);

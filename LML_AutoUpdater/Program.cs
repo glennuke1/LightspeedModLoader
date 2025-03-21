@@ -18,6 +18,10 @@ namespace LML_AutoUpdater
                 }
             }
 
+            Console.WriteLine(Path.Combine(mscpath, "LML_VERSION"));
+            Console.WriteLine(File.Exists(Path.Combine(mscpath, "LML_VERSION")));
+            Console.ReadLine();
+
             if (!IsUpdated())
             {
                 if (Process.GetProcessesByName("mysummercar")[0] != null)
@@ -35,7 +39,7 @@ namespace LML_AutoUpdater
 
         private static bool IsUpdated()
         {
-            if (!File.Exists(mscpath + "/LML_VERSION"))
+            if (!File.Exists(Path.Combine(mscpath, "LML_VERSION")))
             {
                 return false;
             }
@@ -46,9 +50,9 @@ namespace LML_AutoUpdater
                 onlineVersion = wc.DownloadString("https://raw.githubusercontent.com/glennuke1/LightspeedModLoader/refs/heads/master/LightspeedModLoader/Builds/VERSION");
             }
 
-            string localVersion = File.ReadAllText(mscpath + "/LML_VERSION");
+            string localVersion = File.ReadAllText(Path.Combine(mscpath, "LML_VERSION"));
 
-            if (float.Parse(localVersion.Split(' ')[1]) >= float.Parse(onlineVersion.Split(' ')[1]))
+            if (localVersion == onlineVersion)
             {
                 return true;
             }

@@ -87,7 +87,7 @@ namespace LightspeedModLoader
 
                     if (lineNumber > 0)
                     {
-                        Log($"  at {methodName} in {frame.GetFileName()}:line {lineNumber}");
+                        Log($"  at {methodName} in {System.IO.Path.GetFileName(frame.GetFileName())}:line {lineNumber}");
                     }
                     else
                     {

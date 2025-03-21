@@ -5,7 +5,7 @@
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
     <ProjectGuid>{3C6DB4D6-78D4-45AB-A60C-652CFC94C188}</ProjectGuid>
-    <OutputType>WinExe</OutputType>
+    <OutputType>Exe</OutputType>
     <RootNamespace>LML_AutoUpdater</RootNamespace>
     <AssemblyName>LML_AutoUpdater</AssemblyName>
     <TargetFrameworkVersion>v4.8</TargetFrameworkVersion>

@@ -37,6 +37,7 @@ namespace LightspeedModLoader
                 {
                     logQueue.Enqueue($"[{DateTime.Now:HH:mm:ss}] - {message}");
                 }
+                ModEvents.Publish("lmlConsoleLogged", message);
                 MessageLogged?.Invoke(null, new LogEventArgs { Message = message });
             }
         }

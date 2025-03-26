@@ -396,59 +396,63 @@ namespace LightspeedModLoader
             {
                 foreach (Mod mod in A_UpdateMods)
                 {
-                    if (!mod.isDisabled)
+                    if (mod.isDisabled)
                     {
-                        try
-                        {
-                            if (allModsLoaded || mod.LoadInMenu)
-                            {
-                                if (Profiling)
-                                    profiler.Start(mod.ID + "Update");
+                        continue;
+                    }
 
-                                mod.A_Update();
+                    try
+                    {
+                        if (allModsLoaded || mod.LoadInMenu)
+                        {
+                            if (Profiling)
+                                profiler.Start(mod.ID + "Update");
 
-                                if (Profiling)
-                                    profiler.Stop(mod.ID + "Update");
-                            }
+                            mod.A_Update();
+
+                            if (Profiling)
+                                profiler.Stop(mod.ID + "Update");
                         }
-                        catch (NullReferenceException e)
-                        {
-                            if (LogNullReferenceExceptions)
-                                LML_Debug.Error(e);
-                        }
-                        catch (Exception e)
-                        {
+                    }
+                    catch (NullReferenceException e)
+                    {
+                        if (LogNullReferenceExceptions)
                             LML_Debug.Error(e);
-                        }
+                    }
+                    catch (Exception e)
+                    {
+                        LML_Debug.Error(e);
                     }
                 }
 
                 foreach (MSCLoader.Mod mod in mscloadermodsloader.A_UpdateMods)
                 {
-                    if (!mod.isDisabled)
+                    if (mod.isDisabled)
                     {
-                        try
-                        {
-                            if (allModsLoaded || mod.LoadInMenu)
-                            {
-                                if (Profiling)
-                                    profiler.Start(mod.ID + "Update");
+                        continue;
+                    }
 
-                                mod.A_Update();
+                    try
+                    {
+                        if (allModsLoaded || mod.LoadInMenu)
+                        {
+                            if (Profiling)
+                                profiler.Start(mod.ID + "Update");
 
-                                if (Profiling)
-                                    profiler.Stop(mod.ID + "Update");
-                            }
+                            mod.A_Update();
+
+                            if (Profiling)
+                                profiler.Stop(mod.ID + "Update");
                         }
-                        catch (NullReferenceException e)
-                        {
-                            if (LogNullReferenceExceptions)
-                                LML_Debug.Error(e);
-                        }
-                        catch (Exception e)
-                        {
+                    }
+                    catch (NullReferenceException e)
+                    {
+                        if (LogNullReferenceExceptions)
                             LML_Debug.Error(e);
-                        }
+                    }
+                    catch (Exception e)
+                    {
+                        LML_Debug.Error(e);
                     }
                 }
 
@@ -456,28 +460,30 @@ namespace LightspeedModLoader
                 {
                     if (!mod.isDisabled)
                     {
-                        try
-                        {
-                            if (allModsLoaded || mod.LoadInMenu)
-                            {
-                                if (Profiling)
-                                    profiler.Start(mod.ID + "Update");
+                        continue;
+                    }
 
-                                mod.Update();
+                    try
+                    {
+                        if (allModsLoaded || mod.LoadInMenu)
+                        {
+                            if (Profiling)
+                                profiler.Start(mod.ID + "Update");
 
-                                if (Profiling)
-                                    profiler.Stop(mod.ID + "Update");
-                            }
+                            mod.Update();
+
+                            if (Profiling)
+                                profiler.Stop(mod.ID + "Update");
                         }
-                        catch (NullReferenceException e)
-                        {
-                            if (LogNullReferenceExceptions)
-                                LML_Debug.Error(e);
-                        }
-                        catch (Exception e)
-                        {
+                    }
+                    catch (NullReferenceException e)
+                    {
+                        if (LogNullReferenceExceptions)
                             LML_Debug.Error(e);
-                        }
+                    }
+                    catch (Exception e)
+                    {
+                        LML_Debug.Error(e);
                     }
                 }
             }
@@ -676,6 +682,10 @@ namespace LightspeedModLoader
 
                 modFinishedSlider.gameObject.SetActive(true);
                 modFinishedSlider.transform.parent.gameObject.SetActive(true);
+
+                Cursor.SetCursor(null, Vector2.zero, CursorMode.Auto);
+                Cursor.visible = true;
+                Cursor.lockState = CursorLockMode.None;
 
                 foreach (Mod mod in A_OnMenuLoadMods)
                 {

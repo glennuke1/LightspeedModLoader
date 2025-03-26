@@ -95,6 +95,7 @@
     <Compile Include="Entrypoint.cs" />
     <Compile Include="LoadAssets.cs" />
     <Compile Include="Mod.cs" />
+    <Compile Include="ModEvents.cs" />
     <Compile Include="ModLoader.cs" />
     <Compile Include="ModMenu.cs" />
     <Compile Include="ModSettings.cs" />

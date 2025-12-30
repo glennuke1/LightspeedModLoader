@@ -19,6 +19,7 @@ namespace LightspeedModLoader
 
         internal static string AssetsFolder;
         internal static string ConfigFolder;
+        internal static string ReferencesFolder;
 
         internal static bool loaderPrepared = false;
 
@@ -74,6 +75,7 @@ namespace LightspeedModLoader
 
                 AssetsFolder = Path.Combine(ModsFolder, "Assets");
                 ConfigFolder = Path.Combine(ModsFolder, "Config");
+                ReferencesFolder = Path.Combine(ModsFolder, "References");
 
                 if (!Directory.Exists(AssetsFolder))
                 {
@@ -83,6 +85,11 @@ namespace LightspeedModLoader
                 if (!Directory.Exists(ConfigFolder))
                 {
                     Directory.CreateDirectory(ConfigFolder);
+                }
+
+                if (!Directory.Exists(ReferencesFolder))
+                {
+                    Directory.CreateDirectory(ReferencesFolder);
                 }
 
                 LML_Debug.Log("Done checking directories");
@@ -140,8 +147,11 @@ namespace LightspeedModLoader
                 gameObject.AddComponent<UnityMainThreadDispatcher>();
 
                 LML_Debug.Log("Preparing done");
-                LML_Debug.Log("Starting PreLoadMods");
 
+                LML_Debug.Log("Starting LoadReferences");
+                Instance.LoadReferences();
+
+                LML_Debug.Log("Starting PreLoadMods");
                 Instance.PreLoadMods();
             }
         }
@@ -458,7 +468,7 @@ namespace LightspeedModLoader
 
                 foreach (MSCLoader.Mod mod in mscloadermodsloader.loadedMods)
                 {
-                    if (!mod.isDisabled)
+                    if (mod.isDisabled)
                     {
                         continue;
                     }
@@ -667,7 +677,6 @@ namespace LightspeedModLoader
 
                 if (firstTimeMainMenuLoad)
                 {
-                    LoadReferences();
                     AssetBundle ab = LoadAssets.LoadBundle("LightspeedModLoader.Assets.lml.unity3d");
                     GameObject info = Instantiate(ab.LoadAsset<GameObject>("Info"));
                     Text vLabel = info.transform.Find("Version Label").GetComponent<Text>();
@@ -1124,8 +1133,6 @@ namespace LightspeedModLoader
             modFinishedSlider.gameObject.SetActive(false);
             modFinishedSlider.transform.parent.gameObject.SetActive(false);
 
-            gameObject.AddComponent<GameOptimizations>();
-
             allModsLoaded = true;
         }
 
@@ -1290,9 +1297,17 @@ namespace LightspeedModLoader
 
                 foreach (string dll in files)
                 {
-                    Assembly asm = Assembly.LoadFrom(dll);
+                    try
+                    {
+                        Assembly asm = Assembly.LoadFrom(dll);
 
-                    references.Add(asm.GetName().Name);
+                        references.Add(asm.GetName().Name);
+                    }
+                    catch (Exception ex)
+                    {
+                        LML_Debug.Log(dll + " Reference failed to load");
+                        LML_Debug.Error(ex);
+                    }
                 }
             }
         }

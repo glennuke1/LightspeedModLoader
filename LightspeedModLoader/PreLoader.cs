@@ -21,15 +21,6 @@ namespace LightspeedModLoader.PreLoader
             AppDomain.CurrentDomain.AssemblyLoad += AssemblyWatcher;
         }
 
-        internal static void SkipIntro()
-        {
-            if (!introSkipped)
-            {
-                introSkipped = true;
-                Application.LoadLevel("MainMenu");
-            }
-        }
-
         private static void InjectModLoader()
         {
             try
@@ -51,17 +42,6 @@ namespace LightspeedModLoader.PreLoader
                 AppDomain.CurrentDomain.AssemblyLoad -= AssemblyWatcher;
                 InjectModLoader();
             }
-        }
-    }
-
-    [HarmonyPatch(typeof(PlayMakerFSM))]
-    [HarmonyPatch("Awake")]
-    public class InjectIntroSkip
-    {
-        // Token: 0x06000013 RID: 19 RVA: 0x000028EB File Offset: 0x00000AEB
-        private static void Prefix()
-        {
-            PreLoader.SkipIntro();
         }
     }
 

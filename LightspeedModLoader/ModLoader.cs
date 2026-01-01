@@ -726,6 +726,8 @@ namespace LightspeedModLoader
                 GameObject.Find("Interface/Buttons/ButtonQuit").GetComponent<PlayMakerFSM>().FsmStates[0].RemoveAction(2);
                 allModsLoaded = false;
 
+                PlayMakerExtensions.GetAction<HutongGames.PlayMaker.Actions.LoadLevel>(PlayMakerExtensions.GetState(GameObject.Find("Interface/Buttons/ButtonContinue").GetComponent<PlayMakerFSM>(), "Load"), 0).async = true;
+
                 if (firstTimeMainMenuLoad)
                 {
                     AssetBundle ab = LoadAssets.LoadBundle("LightspeedModLoader.Assets.lml.unity3d");

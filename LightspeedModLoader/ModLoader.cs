@@ -400,8 +400,55 @@ namespace LightspeedModLoader
             }
         }
 
+        void DumpGlobals()
+        {
+            var globals = PlayMakerGlobals.Instance.Variables;
+
+            ModConsole.Log("=== PLAYMAKER GLOBAL VARIABLES ===");
+
+            ModConsole.Log("\nInt Variables\n");
+
+            foreach (HutongGames.PlayMaker.FsmInt variable in globals.IntVariables)
+            {
+                ModConsole.Log(variable.Name + "  =  " + variable.Value.ToString());
+            }
+
+            ModConsole.Log("\nFloat Variables\n");
+
+            foreach (HutongGames.PlayMaker.FsmFloat variable in globals.FloatVariables)
+            {
+                ModConsole.Log(variable.Name + "  =  " + variable.Value.ToString());
+            }
+
+            ModConsole.Log("\nBool Variables\n");
+
+            foreach (HutongGames.PlayMaker.FsmBool variable in globals.BoolVariables)
+            {
+                ModConsole.Log(variable.Name + "  =  " + variable.Value.ToString());
+            }
+
+            ModConsole.Log("\nString Variables\n");
+
+            foreach (HutongGames.PlayMaker.FsmString variable in globals.StringVariables)
+            {
+                ModConsole.Log(variable.Name + "  =  " + variable.Value);
+            }
+
+            ModConsole.Log("\nVector3 Variables\n");
+
+            foreach (HutongGames.PlayMaker.FsmVector3 variable in globals.Vector3Variables)
+            {
+                ModConsole.Log(variable.Name + "  =  " + variable.Value.ToString());
+            }
+        }
+
         internal void Update()
         {
+            if (Input.GetKeyDown("b"))
+            {
+                DumpGlobals();
+            }
+
             if (!useAsyncUpdate)
             {
                 foreach (Mod mod in A_UpdateMods)

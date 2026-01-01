@@ -16,8 +16,6 @@ Note: LML is an early beta currently made for personal use (because i like using
 2. Select your MWC Executable file
 3. Click install
 
-There is an option to install official mods such as the console and mod list menu, although these are not required to use LML by itself, some mods will still require them. This option is on by default
-
 # MSCLoader compatability
 
 LML is compatible with most, if not all MSCLoader mods and is constantly improving in compatability and performance

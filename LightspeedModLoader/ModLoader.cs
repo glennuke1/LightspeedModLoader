@@ -404,42 +404,46 @@ namespace LightspeedModLoader
         {
             var globals = PlayMakerGlobals.Instance.Variables;
 
-            ModConsole.Log("=== PLAYMAKER GLOBAL VARIABLES ===");
+            string dumpedVariables = "";
 
-            ModConsole.Log("\nInt Variables\n");
+            dumpedVariables += "=== PLAYMAKER GLOBAL VARIABLES ===\n";
+
+            dumpedVariables += "\nInt Variables\n";
 
             foreach (HutongGames.PlayMaker.FsmInt variable in globals.IntVariables)
             {
-                ModConsole.Log(variable.Name + "  =  " + variable.Value.ToString());
+                dumpedVariables += variable.Name + "  =  " + variable.Value.ToString() + "\n";
             }
 
-            ModConsole.Log("\nFloat Variables\n");
+            dumpedVariables += "\nFloat Variables\n";
 
             foreach (HutongGames.PlayMaker.FsmFloat variable in globals.FloatVariables)
             {
-                ModConsole.Log(variable.Name + "  =  " + variable.Value.ToString());
+                dumpedVariables += variable.Name + "  =  " + variable.Value.ToString() + "\n";
             }
 
-            ModConsole.Log("\nBool Variables\n");
+            dumpedVariables += "\nBool Variables\n";
 
             foreach (HutongGames.PlayMaker.FsmBool variable in globals.BoolVariables)
             {
-                ModConsole.Log(variable.Name + "  =  " + variable.Value.ToString());
+                dumpedVariables += variable.Name + "  =  " + variable.Value.ToString() + "\n";
             }
 
-            ModConsole.Log("\nString Variables\n");
+            dumpedVariables += "\nString Variables\n";
 
             foreach (HutongGames.PlayMaker.FsmString variable in globals.StringVariables)
             {
-                ModConsole.Log(variable.Name + "  =  " + variable.Value);
+                dumpedVariables += variable.Name + "  =  " + variable.Value + "\n";
             }
 
-            ModConsole.Log("\nVector3 Variables\n");
+            dumpedVariables += "\nVector3 Variables\n";
 
             foreach (HutongGames.PlayMaker.FsmVector3 variable in globals.Vector3Variables)
             {
-                ModConsole.Log(variable.Name + "  =  " + variable.Value.ToString());
+                dumpedVariables += variable.Name + "  =  " + variable.Value.ToString() + "\n";
             }
+
+            File.WriteAllText("dumpedVariables.txt", dumpedVariables);
         }
 
         internal void Update()
@@ -1175,7 +1179,7 @@ namespace LightspeedModLoader
 
             LML_Debug.Log("PostLoad Phase Complete");
 
-            GameObject.Find("ITEMS").FsmInject("Save game", new Action(this.SaveMods));
+            GameObject.Find("Systems/Setup Game").FsmInject("Save game", new Action(this.SaveMods));
 
             modFinishedSlider.gameObject.SetActive(false);
             modFinishedSlider.transform.parent.gameObject.SetActive(false);

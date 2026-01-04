@@ -866,6 +866,18 @@ namespace LightspeedModLoader
                     MSCLoader.ModLoader.LoadModsSettings();
                     firstTimeMainMenuLoad = false;
                 }
+
+                PlayMakerFSM newGameFSM = null;
+                foreach (GameObject obj in Resources.FindObjectsOfTypeAll<GameObject>())
+                {
+                    if (obj.name == "ButtonBegin")
+                    {
+                        newGameFSM = obj.GetComponent<PlayMakerFSM>();
+                        break;
+                    }
+                }
+
+                newGameFSM.FsmInject("State 2", OnNewGame);
             }
 
             if (loadedLevelName == "GAME")
@@ -879,7 +891,9 @@ namespace LightspeedModLoader
                 StartCoroutine(LoadModsAsync());
             }
 
-            if (loadedLevelName == "Intro")
+            // Old new game code
+
+            /*if (loadedLevelName == "Intro")
             {
                 MSCLoader.ModLoader.CurrentScene = MSCLoader.CurrentScene.NewGameIntro;
                 foreach (Mod mod in A_OnNewGameMods)
@@ -896,6 +910,25 @@ namespace LightspeedModLoader
                 {
                     mod.OnNewGame();
                 }
+            }*/
+        }
+
+        void OnNewGame()
+        {
+            MSCLoader.ModLoader.CurrentScene = MSCLoader.CurrentScene.NewGameIntro;
+            foreach (Mod mod in A_OnNewGameMods)
+            {
+                mod.A_OnNewGame();
+            }
+
+            foreach (MSCLoader.Mod mod in mscloadermodsloader.A_OnNewGameMods)
+            {
+                mod.A_OnNewGame();
+            }
+
+            foreach (MSCLoader.Mod mod in mscloadermodsloader.loadedMods)
+            {
+                mod.OnNewGame();
             }
         }
 
@@ -1181,7 +1214,7 @@ namespace LightspeedModLoader
 
             LML_Debug.Log("PostLoad Phase Complete");
 
-            GameObject.Find("Systems/Setup Game").FsmInject("Save game", new Action(this.SaveMods));
+            GameObject.Find("Systems/Setup Game").GetComponent<PlayMakerFSM>().FsmInject("Save game", new Action(this.SaveMods));
 
             modFinishedSlider.gameObject.SetActive(false);
             modFinishedSlider.transform.parent.gameObject.SetActive(false);

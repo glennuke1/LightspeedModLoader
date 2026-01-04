@@ -4,7 +4,7 @@ Lightspeed Mod Loader (or LML) is a new mod loader for My Winter Car
 
 LML is built with optimizations and compatability in mind for low end hardware users
 
-Note: LML is an early beta currently made for personal use (because i like using my own stuff so i can modify it to my needs), but feel free to use it if you'd like
+Note: LML is an early beta
 
 # Wiki
 

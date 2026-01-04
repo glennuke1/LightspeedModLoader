@@ -22,10 +22,6 @@ LML is compatible with most, if not all MSCLoader mods and is constantly improvi
 
 LML comes installed with a modified version of MSCLoader.dll for loading MSCLoader mods and redirecting methods called by mods to LML
 
-As of now MSCLoader mods' settings need to be modified through their respective files e.g. mods/Config/somemscloadermod/settings.json
-
-If you can't figure out how to do that, you can either stop using LML and/or wait for an update
-
 # Is LML a virus?
 
 LML is FOSS (Free open source software)

@@ -448,11 +448,6 @@ namespace LightspeedModLoader
 
         internal void Update()
         {
-            if (Input.GetKeyDown("b"))
-            {
-                DumpGlobals();
-            }
-
             if (!useAsyncUpdate)
             {
                 foreach (Mod mod in A_UpdateMods)

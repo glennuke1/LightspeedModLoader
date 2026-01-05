@@ -274,8 +274,9 @@ namespace LightspeedModLoader
 
         private void LoadModsActions()
         {
-            foreach (Mod mod in loadedMods)
+            for (int i = 0; i < loadedMods.Count; i++)
             {
+                Mod mod = loadedMods[i];
                 if (mod.A_OnNewGame != null)
                 {
                     A_OnNewGameMods.Add(mod);
@@ -330,8 +331,9 @@ namespace LightspeedModLoader
 
         internal void OnGUI()
         {
-            foreach (Mod mod in A_OnGUIMods)
+            for (int i = 0; i < A_OnGUIMods.Count; i++)
             {
+                Mod mod = A_OnGUIMods[i];
                 if (!mod.isDisabled)
                 {
                     try
@@ -353,8 +355,9 @@ namespace LightspeedModLoader
                 }
             }
 
-            foreach (MSCLoader.Mod mod in mscloadermodsloader.A_OnGUIMods)
+            for (int i = 0; i < mscloadermodsloader.A_OnGUIMods.Count; i++)
             {
+                MSCLoader.Mod mod = mscloadermodsloader.A_OnGUIMods[i];
                 if (!mod.isDisabled)
                 {
                     try
@@ -376,6 +379,7 @@ namespace LightspeedModLoader
                 }
             }
 
+            //might just remove this
             foreach (MSCLoader.Mod mod in mscloadermodsloader.loadedMods)
             {
                 if (!mod.isDisabled)
@@ -400,58 +404,13 @@ namespace LightspeedModLoader
             }
         }
 
-        void DumpGlobals()
-        {
-            var globals = PlayMakerGlobals.Instance.Variables;
-
-            string dumpedVariables = "";
-
-            dumpedVariables += "=== PLAYMAKER GLOBAL VARIABLES ===\n";
-
-            dumpedVariables += "\nInt Variables\n";
-
-            foreach (HutongGames.PlayMaker.FsmInt variable in globals.IntVariables)
-            {
-                dumpedVariables += variable.Name + "  =  " + variable.Value.ToString() + "\n";
-            }
-
-            dumpedVariables += "\nFloat Variables\n";
-
-            foreach (HutongGames.PlayMaker.FsmFloat variable in globals.FloatVariables)
-            {
-                dumpedVariables += variable.Name + "  =  " + variable.Value.ToString() + "\n";
-            }
-
-            dumpedVariables += "\nBool Variables\n";
-
-            foreach (HutongGames.PlayMaker.FsmBool variable in globals.BoolVariables)
-            {
-                dumpedVariables += variable.Name + "  =  " + variable.Value.ToString() + "\n";
-            }
-
-            dumpedVariables += "\nString Variables\n";
-
-            foreach (HutongGames.PlayMaker.FsmString variable in globals.StringVariables)
-            {
-                dumpedVariables += variable.Name + "  =  " + variable.Value + "\n";
-            }
-
-            dumpedVariables += "\nVector3 Variables\n";
-
-            foreach (HutongGames.PlayMaker.FsmVector3 variable in globals.Vector3Variables)
-            {
-                dumpedVariables += variable.Name + "  =  " + variable.Value.ToString() + "\n";
-            }
-
-            File.WriteAllText("dumpedVariables.txt", dumpedVariables);
-        }
-
         internal void Update()
         {
             if (!useAsyncUpdate)
             {
-                foreach (Mod mod in A_UpdateMods)
+                for (int i = 0; i < A_UpdateMods.Count; i++)
                 {
+                    Mod mod = A_UpdateMods[i];
                     if (mod.isDisabled)
                     {
                         continue;
@@ -481,8 +440,9 @@ namespace LightspeedModLoader
                     }
                 }
 
-                foreach (MSCLoader.Mod mod in mscloadermodsloader.A_UpdateMods)
+                for (int i = 0; i < mscloadermodsloader.A_UpdateMods.Count; i++)
                 {
+                    MSCLoader.Mod mod = mscloadermodsloader.A_UpdateMods[i];
                     if (mod.isDisabled)
                     {
                         continue;
@@ -551,8 +511,9 @@ namespace LightspeedModLoader
 
             while (true)
             {
-                foreach (Mod mod in A_UpdateMods)
+                for (int i = 0; i < A_UpdateMods.Count; i++)
                 {
+                    Mod mod = A_UpdateMods[i];
                     if (counter++ >= 5)
                     {
                         yield return null;
@@ -579,8 +540,9 @@ namespace LightspeedModLoader
                     }
                 }
 
-                foreach (MSCLoader.Mod mod in mscloadermodsloader.A_UpdateMods)
+                for (int i = 0; i < mscloadermodsloader.A_UpdateMods.Count; i++)
                 {
+                    MSCLoader.Mod mod = mscloadermodsloader.A_UpdateMods[i];
                     if (counter++ >= 5)
                     {
                         yield return null;
@@ -639,8 +601,9 @@ namespace LightspeedModLoader
 
         internal void FixedUpdate()
         {
-            foreach (Mod mod in A_FixedUpdateMods)
+            for (int i = 0; i < A_FixedUpdateMods.Count; i++)
             {
+                Mod mod = A_FixedUpdateMods[i];
                 if (!mod.isDisabled)
                 {
                     try
@@ -662,8 +625,9 @@ namespace LightspeedModLoader
                 }
             }
 
-            foreach (MSCLoader.Mod mod in mscloadermodsloader.A_FixedUpdateMods)
+            for (int i = 0; i < mscloadermodsloader.A_FixedUpdateMods.Count; i++)
             {
+                MSCLoader.Mod mod = mscloadermodsloader.A_FixedUpdateMods[i];
                 if (!mod.isDisabled)
                 {
                     try
@@ -929,8 +893,9 @@ namespace LightspeedModLoader
 
         internal IEnumerator LoadModsAsync()
         {
-            foreach (Mod mod in A_PreLoadMods)
+            for (int i = 0; i < A_PreLoadMods.Count; i++)
             {
+                Mod mod = A_PreLoadMods[i];
                 progressText.text = mod.ID;
                 yield return null;
                 try
@@ -1016,8 +981,9 @@ namespace LightspeedModLoader
 
             int counter = 0;
 
-            foreach (Mod mod in A_OnLoadMods)
+            for (int i = 0; i < A_OnLoadMods.Count; i++)
             {
+                Mod mod = A_OnLoadMods[i];
                 progressText.text = mod.ID;
                 if (!mod.isDisabled)
                 {
@@ -1113,8 +1079,9 @@ namespace LightspeedModLoader
 
             modFinishedSlider.value = 0;
 
-            foreach (Mod mod in A_PostLoadMods)
+            for (int i = 0; i < A_PostLoadMods.Count; i++)
             {
+                Mod mod = A_PostLoadMods[i];
                 progressText.text = mod.ID;
                 if (!mod.isDisabled)
                 {
@@ -1282,8 +1249,9 @@ namespace LightspeedModLoader
 
         public static object GetMod(string modID)
         {
-            foreach (Mod mod in Instance.loadedMods)
+            for (int i = 0; i < Instance.loadedMods.Count; i++)
             {
+                Mod mod = Instance.loadedMods[i];
                 if (mod.ID.ToLower() == modID.ToLower())
                 {
                     return mod;

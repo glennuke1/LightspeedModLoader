@@ -32,6 +32,8 @@ Even though the mod loader source code is available on github, you can still loo
 
 [LML Installer Repo](https://github.com/glennuke1/LML_Installer)
 
+# License
+
 This project is licensed under the GNU General Public License v3.0 (GPL-3.0).
 
 This project contains and modifies code from MSCLoader:

@@ -36,3 +36,10 @@ This project is licensed under the GNU General Public License v3.0 (GPL-3.0).
 
 This project contains and modifies code from MSCLoader:
 [https://github.com/piotrulos/MSCLoader](https://github.com/piotrulos/MSCModLoader)
+
+# Used Libriaries
+* NAudio/NVorbis - MIT License (MIT)
+* Ionic.Zip (DotNetZip) - Microsoft Public License (Ms-PL)
+* Newtonsoft.Json - MIT License (MIT)
+* UnityDoorstop - v3 - CC0 (Public Domain) / v4 - LGPL-2.1 license (LGPL-2.1)
+* Harmony - MIT License (MIT)

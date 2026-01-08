@@ -31,3 +31,8 @@ It is written in C#, which means you can freely decompile it and look at all of 
 Even though the mod loader source code is available on github, you can still look through the code of the installer and official mods using [DnSpy](https://github.com/dnSpy/dnSpy)
 
 [LML Installer Repo](https://github.com/glennuke1/LML_Installer)
+
+This project is licensed under the GNU General Public License v3.0 (GPL-3.0).
+
+This project contains and modifies code from MSCLoader:
+[https://github.com/piotrulos/MSCLoader](https://github.com/piotrulos/MSCModLoader)
